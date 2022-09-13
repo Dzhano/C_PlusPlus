@@ -1,0 +1,3 @@
+﻿  Exercise8.cpp
+D:\COS 120 C++ Programming\C_PlusPlus\Lecture02\Exercise8\Exercise8.cpp(9,24): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Exercise8.vcxproj -> D:\COS 120 C++ Programming\C_PlusPlus\Lecture02\x64\Debug\Exercise8.exe
