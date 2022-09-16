@@ -1,0 +1,4 @@
+﻿  Exercise2.cpp
+D:\COS 120 C++ Programming\C_PlusPlus\Lecture03\Exercise2\Exercise2.cpp(10,55): warning C4305: '=': truncation from 'double' to 'float'
+D:\COS 120 C++ Programming\C_PlusPlus\Lecture03\Exercise2\Exercise2.cpp(11,38): warning C4305: '=': truncation from 'double' to 'float'
+  Exercise2.vcxproj -> D:\COS 120 C++ Programming\C_PlusPlus\Lecture03\x64\Debug\Exercise2.exe
