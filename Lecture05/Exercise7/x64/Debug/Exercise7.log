@@ -1,0 +1,3 @@
+﻿  Exercise7.cpp
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture05\Exercise7\Exercise7.cpp(16,5): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Exercise7.vcxproj -> D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture05\x64\Debug\Exercise7.exe
