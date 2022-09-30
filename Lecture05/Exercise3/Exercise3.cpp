@@ -14,5 +14,5 @@ int main()
 float payrise(float salary)
 {
     if (salary < 40000) return salary * 1.05;
-    else return salary * 1.02 + 2000;
+    else return salary + (salary - 40000) * .02 + 2000;
 }
