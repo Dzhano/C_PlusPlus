@@ -1,0 +1,10 @@
+﻿  Exercise3.cpp
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture12\Exercise3\Exercise3.cpp(6,34): error C2059: syntax error: ','
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture12\Exercise3\Exercise3.cpp(6,36): error C2143: syntax error: missing ';' before '}'
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture12\Exercise3\Exercise3.cpp(6,37): error C2059: syntax error: ','
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture12\Exercise3\Exercise3.cpp(7,15): error C2143: syntax error: missing ';' before '<<'
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture12\Exercise3\Exercise3.cpp(7,15): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture12\Exercise3\Exercise3.cpp(7,10): error C2371: 'std::cout': redefinition; different basic types
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.33.31629\include\iostream(40): message : see declaration of 'std::cout'
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture12\Exercise3\Exercise3.cpp(8,1): error C2059: syntax error: '}'
+D:\Classes\COS 120 C++ Programming\C_PlusPlus\Lecture12\Exercise3\Exercise3.cpp(8,1): error C2143: syntax error: missing ';' before '}'
