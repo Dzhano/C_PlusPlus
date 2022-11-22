@@ -1,0 +1,8 @@
+﻿  Exercise1.cpp
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lecture14\Exercise1\Exercise1.cpp(9,33): warning C4553: '==': result of expression not used; did you intend '='?
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lecture14\Exercise1\Exercise1.cpp(20,79): message : see reference to function template instantiation 'T minimum<int>(T [],int)' being compiled
+          with
+          [
+              T=int
+          ]
+  Exercise1.vcxproj -> D:\AUBG\Classes\Computer Science\C_PlusPlus\Lecture14\x64\Debug\Exercise1.exe
