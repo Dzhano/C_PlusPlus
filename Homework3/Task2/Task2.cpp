@@ -7,7 +7,7 @@
 int main()
 {
     // Open the file
-    std::ifstream input("D:\\Classes\\COS 120 C++ Programming\\C_PlusPlus\\Homework3\\Task2\\products.txt"); // Since the task is going to be tested on another computer, but mine, the program address is going to be different than the one on my laptop.
+    std::ifstream input("...\\Homework3\\Task2\\products.txt"); // Since the task is going to be tested on another computer, but mine, the program address is going to be different than the one on my laptop.
 
     //Check whether the file was opened successfully
     if (input.fail()) {
@@ -24,8 +24,11 @@ int main()
 
     while (!input.eof()) // Checking whether there are any lines in the file and, if there are, the loop will go through all of them.
     {
-        input >> name >> unitPrice >> quantity; // From the current line we extract the needed information: the name, the unit price and the quantity.
-        
+        // From the current line we extract the needed information:
+        getline(input, name, '$'); // the name by stopping at the '$' character
+        input >> unitPrice >> quantity; // the price per unit and the quantity.
+        input.ignore(100, '\n'); // After that we make the progrma to skip the sign for new line so it does get included in the name of the next product.
+
         Product product(name, unitPrice, quantity); // Creating a new product
         product.display(); // Displays the information about the product
 

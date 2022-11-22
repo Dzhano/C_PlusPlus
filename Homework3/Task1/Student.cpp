@@ -55,5 +55,5 @@ void Student::gettingOlder()
 
 void Student::display() // Displaying the information about the product.
 {
-	std::cout << "Student: " << getName() << " with major " << getMajor() << " of age: " << getAge() << ".";
+	std::cout << "Student: " << getName() << " with major " << getMajor() << " of age: " << getAge() << "." << std::endl;
 }
