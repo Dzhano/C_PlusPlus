@@ -1,0 +1,4 @@
+﻿  Contact.cpp
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Homework4\Task1\Contact.cpp(72,1): error C3867: 'BlockedContact::getBlocked': non-standard syntax; use '&' to create a pointer to member
+  Task1.cpp
+  Generating Code...
