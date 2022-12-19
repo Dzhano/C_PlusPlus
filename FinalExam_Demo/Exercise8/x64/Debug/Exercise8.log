@@ -1,0 +1,9 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(517,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (Exercise8.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Exercise8.cpp
+D:\AUBG\Classes\Computer Science\C_PlusPlus\FinalExam_Demo\Exercise8\Student.cpp(23,18): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+D:\AUBG\Classes\Computer Science\C_PlusPlus\FinalExam_Demo\Exercise8\Student.cpp(24,20): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  Student.cpp
+D:\AUBG\Classes\Computer Science\C_PlusPlus\FinalExam_Demo\Exercise8\Student.cpp(23,18): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+D:\AUBG\Classes\Computer Science\C_PlusPlus\FinalExam_Demo\Exercise8\Student.cpp(24,20): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  Generating Code...
+  Exercise8.vcxproj -> D:\AUBG\Classes\Computer Science\C_PlusPlus\FinalExam_Demo\x64\Debug\Exercise8and9.exe
