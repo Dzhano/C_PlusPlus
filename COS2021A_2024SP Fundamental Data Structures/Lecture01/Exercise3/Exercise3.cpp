@@ -10,7 +10,9 @@ private:
 
 public:
     // Constructor
-    ChecksumChecker(const string& filename) : filename(filename) {}
+    ChecksumChecker(const string& filename) {
+        this->filename = filename;
+    }
 
     // Method to compute checksum
     uint32_t compute() {

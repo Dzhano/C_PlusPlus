@@ -9,7 +9,7 @@ string* name() {
 void main() {
 	string* strName = name();
 	int x = (*strName)[3] - (*strName)[1];
-	delete strName;
-	int y = sizeof(strName);
+	delete strName; // even though it deletes strName, the memory of strDelete is set to default
+	int y = sizeof(strName); // undefined behavior
 	cout << x << y << endl; // 78
 }
