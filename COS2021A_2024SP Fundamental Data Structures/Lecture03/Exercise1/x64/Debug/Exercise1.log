@@ -1,0 +1,3 @@
+﻿  Exercise1.cpp
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Lecture03\Exercise1\Exercise1.cpp(51,1): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  Exercise1.vcxproj -> D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Lecture03\x64\Debug\Exercise1.exe
