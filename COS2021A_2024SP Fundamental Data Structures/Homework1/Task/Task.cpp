@@ -44,19 +44,24 @@ public:
 
 
     Division(const Division& other) { // Copy constructor
-        this->GUID = other.GUID;
-        this->Name = other.Name;
-        this->PhoneNumber = other.PhoneNumber;
-        this->Description = other.Description;
-        this->Parent = other.Parent;
+        if (this != &other) {
+            this->GUID = other.GUID;
+            this->Name = other.Name;
+            this->PhoneNumber = other.PhoneNumber;
+            this->Description = other.Description;
+            this->Parent = other.Parent;
+        }
     }
 
     const Division& operator=(const Division& other) { // assignment operator
-        this->GUID = other.GUID;
-        this->Name = other.Name;
-        this->PhoneNumber = other.PhoneNumber;
-        this->Description = other.Description;
-        this->Parent = other.Parent;
+        if (this != &other) {
+            this->GUID = other.GUID;
+            this->Name = other.Name;
+            this->PhoneNumber = other.PhoneNumber;
+            this->Description = other.Description;
+            this->Parent = other.Parent;
+        }
+        return *this;
     }
 };
 
@@ -106,27 +111,32 @@ public:
     }
 
     Artifact(const Artifact& other) { // Copy constructor
-        this->GUID = other.GUID;
-        this->Name = other.Name;
-        this->Description = other.Description;
-        this->Category = other.Category;
-        this->division = other.division;
-        this->Price = other.Price;       
-        this->Discount = other.Discount;
-        this->discountType = other.discountType;
-        this->Quantity = other.Quantity;
+        if (this != &other) {
+            this->GUID = other.GUID;
+            this->Name = other.Name;
+            this->Description = other.Description;
+            this->Category = other.Category;
+            this->division = other.division;
+            this->Price = other.Price;
+            this->Discount = other.Discount;
+            this->discountType = other.discountType;
+            this->Quantity = other.Quantity;
+        }
     }
 
     const Artifact& operator=(const Artifact& other) { // assignment operator
-        this->GUID = other.GUID;
-        this->Name = other.Name;
-        this->Description = other.Description;
-        this->Category = other.Category;
-        this->division = other.division;
-        this->Price = other.Price;
-        this->Discount = other.Discount;
-        this->discountType = other.discountType;
-        this->Quantity = other.Quantity;
+        if (this != &other) {
+            this->GUID = other.GUID;
+            this->Name = other.Name;
+            this->Description = other.Description;
+            this->Category = other.Category;
+            this->division = other.division;
+            this->Price = other.Price;
+            this->Discount = other.Discount;
+            this->discountType = other.discountType;
+            this->Quantity = other.Quantity;
+        }
+        return *this;
     }
 
 
@@ -184,26 +194,31 @@ public:
     }
 
     Service(const Service& other) : Artifact(other) { // Copy constructor
-        this->Duration = other.Duration;
-        this->Rate = other.Rate;
-        this->RateDiscount = other.Rate;
-        this->RateDiscountType = other.RateDiscountType;
+        if (this != &other) {
+            this->Duration = other.Duration;
+            this->Rate = other.Rate;
+            this->RateDiscount = other.Rate;
+            this->RateDiscountType = other.RateDiscountType;
+        }
     }
 
     const Service& operator=(const Service& other) { // assignment operator
-        this->GUID = other.GUID;
-        this->Name = other.Name;
-        this->Description = other.Description;
-        this->Category = other.Category;
-        this->division = other.division;
-        this->Price = other.Price;
-        this->Discount = other.Discount;
-        this->discountType = other.discountType;
-        this->Quantity = other.Quantity;
-        this->Duration = other.Duration;
-        this->Rate = other.Rate;
-        this->RateDiscount = other.Rate;
-        this->RateDiscountType = other.RateDiscountType;
+        if (this != &other) {
+            this->GUID = other.GUID;
+            this->Name = other.Name;
+            this->Description = other.Description;
+            this->Category = other.Category;
+            this->division = other.division;
+            this->Price = other.Price;
+            this->Discount = other.Discount;
+            this->discountType = other.discountType;
+            this->Quantity = other.Quantity;
+            this->Duration = other.Duration;
+            this->Rate = other.Rate;
+            this->RateDiscount = other.Rate;
+            this->RateDiscountType = other.RateDiscountType;
+        }
+        return *this;
     }
 
 
