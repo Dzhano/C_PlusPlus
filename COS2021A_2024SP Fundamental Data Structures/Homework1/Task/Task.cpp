@@ -242,7 +242,7 @@ int main()
     Service* service1 = new Service("D447-45A2-2056", "Sport channels", "Diema Sport (1, 2, 3, HD)", "Channels", division1, 0.029, 3, percentage, 1, 20, 1, 2, percentage);
     Service* service2 = new Service("D447-45A2-1231", "Phone Services", "Phone Calls and Text Messages", "Mobile operators", division2, 10, 5, amount, 3, 30, 2, 5, percentage);
     Service* service3 = new Service("ABD9-84F9-1111", "Car insurance", "Insurance for family-sized car covering most traffic accidents.", "Car services", division3, 0.031, 50, percentage, 1, 100, 5, 23, percentage);
-
+    
 
     Divisions.push_back(division1);
     Divisions.push_back(division2);
@@ -273,4 +273,8 @@ int main()
         cout << "Total Price: $" << round(Services[i]->GetTotalPrice() * 100.0) / 100.0 << endl;
         cout << endl;
     }
+
+    delete division1, division2, division3,
+            artifact1, artifact2, artifact3,
+            service1, service2, service3;
 }
