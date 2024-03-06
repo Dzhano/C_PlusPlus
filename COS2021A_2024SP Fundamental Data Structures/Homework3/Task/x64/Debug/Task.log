@@ -1,0 +1,3 @@
+﻿  Task.cpp
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Homework3\Task\Task.cpp(303,30): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  Task.vcxproj -> D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Homework3\x64\Debug\Task.exe

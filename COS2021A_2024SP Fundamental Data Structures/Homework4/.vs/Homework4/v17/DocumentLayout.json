@@ -1,0 +1,58 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\AUBG\\Classes\\Computer Science (COS)\\C_PlusPlus\\COS2021A_2024SP Fundamental Data Structures\\Homework4\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A5BC2D75-1EFF-4A89-A4D7-2F032B9D6BFA}|Task\\Task.vcxproj|D:\\AUBG\\Classes\\Computer Science (COS)\\C_PlusPlus\\COS2021A_2024SP Fundamental Data Structures\\Homework4\\Task\\KMP.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A5BC2D75-1EFF-4A89-A4D7-2F032B9D6BFA}|Task\\Task.vcxproj|solutionrelative:Task\\KMP.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A5BC2D75-1EFF-4A89-A4D7-2F032B9D6BFA}|Task\\Task.vcxproj|D:\\AUBG\\Classes\\Computer Science (COS)\\C_PlusPlus\\COS2021A_2024SP Fundamental Data Structures\\Homework4\\Task\\Task.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A5BC2D75-1EFF-4A89-A4D7-2F032B9D6BFA}|Task\\Task.vcxproj|solutionrelative:Task\\Task.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "KMP.cpp",
+              "DocumentMoniker": "D:\\AUBG\\Classes\\Computer Science (COS)\\C_PlusPlus\\COS2021A_2024SP Fundamental Data Structures\\Homework4\\Task\\KMP.cpp",
+              "RelativeDocumentMoniker": "Task\\KMP.cpp",
+              "ToolTip": "D:\\AUBG\\Classes\\Computer Science (COS)\\C_PlusPlus\\COS2021A_2024SP Fundamental Data Structures\\Homework4\\Task\\KMP.cpp",
+              "RelativeToolTip": "Task\\KMP.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACAAAABBAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-02-25T14:43:28.832Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Task.cpp",
+              "DocumentMoniker": "D:\\AUBG\\Classes\\Computer Science (COS)\\C_PlusPlus\\COS2021A_2024SP Fundamental Data Structures\\Homework4\\Task\\Task.cpp",
+              "RelativeDocumentMoniker": "Task\\Task.cpp",
+              "ToolTip": "D:\\AUBG\\Classes\\Computer Science (COS)\\C_PlusPlus\\COS2021A_2024SP Fundamental Data Structures\\Homework4\\Task\\Task.cpp",
+              "RelativeToolTip": "Task\\Task.cpp",
+              "ViewState": "AQIAABoBAAAAAAAAAAAwwDwBAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-02-20T11:19:32.23Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

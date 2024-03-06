@@ -1,0 +1,14 @@
+﻿  Task.cpp
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Homework4\Task\KMP.cpp(10,15): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'Task.cpp')
+  
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Homework4\Task\KMP.cpp(35,15): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'Task.cpp')
+  
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Homework4\Task\KMP.cpp(36,15): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'Task.cpp')
+  
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Homework4\Task\KMP.cpp(58,28): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'Task.cpp')
+  
+  Task.vcxproj -> D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Homework4\x64\Debug\Task.exe
