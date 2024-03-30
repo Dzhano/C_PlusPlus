@@ -1,0 +1,41 @@
+﻿  PreorderTraversal.cpp
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(18,12): error C2011: 'Node': 'class' type redefinition
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(34,28): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(38,25): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(39,30): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(40,17): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(43,30): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(44,17): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(54,26): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(55,22): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
+D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(56,22): error C2027: use of undefined type 'Node'
+  D:\AUBG\Classes\Computer Science\C_PlusPlus\Lab2(Trees)\PreorderTraversal\PreorderTraversal.cpp(6,7):
+  see declaration of 'Node'
+  
