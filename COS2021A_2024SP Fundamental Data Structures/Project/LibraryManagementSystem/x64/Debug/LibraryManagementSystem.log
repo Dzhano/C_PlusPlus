@@ -1,5 +1,14 @@
-﻿  KMP.cpp
-D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\KMP.cpp(5,10): error C1014: too many include files: depth = 1024
-  LibraryManagementSystem.cpp
-D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(7,10): error C1014: too many include files: depth = 1024
-  Generating Code...
+﻿  LibraryManagementSystem.cpp
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\KMP.cpp(11,15): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'LibraryManagementSystem.cpp')
+  
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\KMP.cpp(36,15): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'LibraryManagementSystem.cpp')
+  
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\KMP.cpp(37,15): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'LibraryManagementSystem.cpp')
+  
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\KMP.cpp(59,28): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'LibraryManagementSystem.cpp')
+  
+  LibraryManagementSystem.vcxproj -> D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\x64\Debug\LibraryManagementSystem.exe

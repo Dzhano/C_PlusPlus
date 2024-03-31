@@ -8,12 +8,13 @@
 
 using namespace std;
 
-
+// Data collections
 enum Condition { New, Good, Average, Bad, OnTheVergeOfCollapsing, Stolen};
 enum Subscription { Free, Basic, Standard, Premium};
 
 vector<string> IDs;
 
+// Functions
 void separateDate(string date, int& month, int& day, int& year) {
 
     // Create a string stream from the date string
@@ -52,7 +53,7 @@ int daysBetweenTwoDates(string oldDate, string laterDate) {
     for (int year = oldYear; year < laterYear; ++year)
         days += ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) ? 366 : 365;
 
-    for (int month = 1; month < newMonth; ++month) {
+    for (int month = 1; month < laterMonth; ++month) {
         days -= daysInMonth(month, oldYear);
     }
     days -= oldDay;
@@ -74,6 +75,7 @@ Condition ConditionFromString(string conditionStr) {
 }
 
 
+// Classes
 class Item { // Abstract class
 protected:
     string name;
@@ -233,7 +235,7 @@ public:
             int daysOfBeingLate = daysBetweenTwoDates(dateOfReturn, currentDate);
             if (daysOfBeingLate <= 2) fee = 0; // no tax at all
             else if (daysOfBeingLate <= 5) fee /= 4; // a quarter of the tax
-            else if (daysOfBeingLate <= 7) fee /= 3 // a third of the tax
+            else if (daysOfBeingLate <= 7) fee /= 3; // a third of the tax
             else if (daysOfBeingLate <= 10) fee /= 2; // half of the tax
         }
         else cout << "The item is not late. Therefore, there is no fee." << endl;
@@ -566,6 +568,7 @@ void KMPcommand(vector<Item*> Items, string searchString) {
 };
 
 
+// Main program
 int main()
 {
     cout << "Welcome to our library program! Here you can upload the collection of items contained in your library." << endl
@@ -576,7 +579,7 @@ int main()
         << "If there are any problems, feel free to contact our support team :)" << endl
         << endl;
 
-    string fileChoice;
+    string fileChoice = "items.txt";
     while (fileChoice != "items.txt" && fileChoice != "another")
     {
         cout << "What file would you want to use? \"items.txt\" or another? Answer explicitly: ";
@@ -590,7 +593,7 @@ int main()
         string choice = "No";
         while (true)
         {
-            cout << "Are you sure this is the file you want to use? Yes or No (answer explicitly, if you do not, the program will ask you again):";
+            cout << "Are you sure this is the file you want to use? Yes or No (answer explicitly, if you do not, the program will ask you again): ";
             cin >> choice;
             if (choice == "Yes") break;
             if (choice == "No") {
@@ -599,7 +602,7 @@ int main()
             }
         }
     }
-
+    
     vector<Item*> Items;
     string line;
 
@@ -607,48 +610,74 @@ int main()
     while (getline(itemsFile, line))
     {
         stringstream iss(line);
+        vector<string> elements;
 
+        // Collect the data separated by commas
+        string element;
+        getline(iss, element, ',');
+        if ((element.find("//") != string::npos) || element.empty()) continue;
+        elements.push_back(element); // for item's type
+
+        for (int i = 0; i < 2; i++) // for item's name and ID
+        {
+            getline(iss, element, ',');
+            element.erase(0, 1);
+            if (i == 0) element = element.substr(1, element.size() - 2); // Removing the "" from the item's name.
+            elements.push_back(element);
+        }
+
+        getline(iss, element, '\"'); // Removing the first " of the item's description.
+        getline(iss, element, '\"'); // for item's description
+        elements.push_back(element);
+
+        getline(iss, element, ','); // To clean the useless comma.
+        while (getline(iss, element, ',')) { // for item's other data
+            element.erase(0, 1);
+            elements.push_back(element);
+        }
+        if (elements.size() == 0) continue;
         string type, name, ID, description;
-        getline(iss, type, ": \"");
-        if (type == "//") continue;
-        getline(iss, name, "\", ");
-        getline(iss, ID, ", \"");
-        getline(iss, description, "\", ");
+
+        // Assign elements to variables
+        type = elements[0];
+        name = elements[1];
+        ID = elements[2];
+        description = elements[3];
+        
         string releaseDate, dateOfReservation, dateOfReturn, conditionStr;
-        // iss >> type >> name >> ID >> description;
 
         if (type == "Book" || type == "Ebook") {
             string author, genre;
             int year;
-            // iss >> author >> genre >> year >> releaseDate >> dateOfReservation >> dateOfReturn >> conditionStr;
-            getline(iss, author, ", ");
-            getline(iss, genre, ", ");
-            getline(iss, year, ", ");
-            getline(iss, releaseDate, ", ");
-            getline(iss, dateOfReservation, ", ");
-            getline(iss, dateOfReturn, ", ");
-            getline(iss, conditionStr,);
             
-            if (type == "Book:") {
+            author = elements[4];
+            genre = elements[5];
+            year = stoi(elements[6]);
+            releaseDate = elements[7];
+            dateOfReservation = elements[8];
+            dateOfReturn = elements[9];
+            conditionStr = elements[10];
+            
+            if (type == "Book") {
                 Condition condition = ConditionFromString(conditionStr);
 
                 Book* newBook = new Book(name, ID, description, author, genre, year, releaseDate, dateOfReservation, dateOfReturn, condition);
                 Items.push_back(newBook);
             }
-            else if (type == "Ebook:") {
+            else if (type == "Ebook") {
                 Ebook* newEbook = new Ebook(author, ID, description, author, genre, year, releaseDate, dateOfReservation, dateOfReturn, conditionStr);
                 Items.push_back(newEbook);
             }
         }
         else if (type == "Magazine") {
             string publisher, issueNumber;
-            // iss >> publisher >> issueNumber >> releaseDate >> dateOfReservation >> dateOfReturn >> conditionStr;
-            getline(iss, publisher, ", ");
-            getline(iss, issueNumber, ", ");
-            getline(iss, releaseDate, ", ");
-            getline(iss, dateOfReservation, ", ");
-            getline(iss, dateOfReturn, ", ");
-            getline(iss, conditionStr);
+
+            publisher = elements[4];
+            issueNumber = elements[5];
+            releaseDate = elements[6];
+            dateOfReservation = elements[7];
+            dateOfReturn = elements[8];
+            conditionStr = elements[9];
 
             Condition condition = ConditionFromString(conditionStr);
 
@@ -659,15 +688,15 @@ int main()
             string director, genre;
             int year;
             double duration;
-            // iss >> director >> genre >> year >> duration >> releaseDate >> dateOfReservation >> dateOfReturn >> conditionStr;
-            getline(iss, director, ", ");
-            getline(iss, genre, ", ");
-            getline(iss, year, ", ");
-            getline(iss, duration, ", ");
-            getline(iss, releaseDate, ", ");
-            getline(iss, dateOfReservation, ", ");
-            getline(iss, dateOfReturn, ", ");
-            getline(iss, conditionStr);
+
+            director = elements[4];
+            genre = elements[5];
+            year = stoi(elements[6]);
+            duration = stod(elements[7]);
+            releaseDate = elements[8];
+            dateOfReservation = elements[9];
+            dateOfReturn = elements[10];
+            conditionStr = elements[11];
 
             Condition condition = ConditionFromString(conditionStr);
 
@@ -677,14 +706,14 @@ int main()
         else if (type == "Software") {
             string username, plan;
             double usageTime;
-            // iss >> username >> plan >> usageTime >> releaseDate >> dateOfReservation >> dateOfReturn >> conditionStr;
-            getline(iss, username, ", ");
-            getline(iss, plan, ", ");
-            getline(iss, usageTime, ", ");
-            getline(iss, releaseDate, ", ");
-            getline(iss, dateOfReservation, ", ");
-            getline(iss, dateOfReturn, ", ");
-            getline(iss, conditionStr);
+
+            releaseDate = elements[4];
+            username = elements[5];
+            plan = elements[6];
+            usageTime = stod(elements[7]);
+            dateOfReservation = elements[8];
+            dateOfReturn = elements[9];
+            conditionStr = elements[10];
 
             Subscription SubscriptionPlan;
             if (plan == "Free") SubscriptionPlan = Free;

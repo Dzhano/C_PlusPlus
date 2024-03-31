@@ -1,29 +1,31 @@
-//: This is the file where the items can uploaded according to their types.
-//: You must follow the standard protocol on how the information for each of them must be uploaded (order, number of data, type, etc.)
-//: If the item type is not one of the following - Book, Ebook, Magazine, DVD or Software - the program will not accept it.
+// This is the file where the items can uploaded according to their types.
+// You must follow the standard protocol on how the information for each of them must be uploaded (order, number of data, type, etc.)
+// If the item type is not one of the following - Book, Ebook, Magazine, DVD or Software - the program will not accept it.
 
-//: Date input format for:
-//: Book: "name", ID, "description", authorNames, genre, year, releaseDate, dateOfReservation, dateOfReturn, condition
+// Date input format for:
+// Book, "name", ID, "description", authorNames, genre, year, releaseDate, dateOfReservation, dateOfReturn, condition
 
-//: Ebook: "name", ID, "description", authorNames, genre, year, releaseDate, dateOfReservation, dateOfReturn, expirationDate
+// Ebook, "name", ID, "description", authorNames, genre, year, releaseDate, dateOfReservation, dateOfReturn, expirationDate
 
-//: Magazine: "name", ID, "description", publisher, issueNumber, releaseDate, dateOfReservation, dateOfReturn, condition
+// Magazine, "name", ID, "description", publisher, issueNumber, releaseDate, dateOfReservation, dateOfReturn, condition
 
-//: DVD: "name", ID, "description", directorNames, genre, year, duration, releaseDate, dateOfReservation, dateOfReturn, condition
+// DVD, "name", ID, "description", directorNames, genre, year, duration, releaseDate, dateOfReservation, dateOfReturn, condition
 
-//: Software: "name", ID, "description", releaseDate, username, SubscriptionPlan usageTime, dateOfReservation, dateOfReturn, expirationDate
+// Software, "name", ID, "description", releaseDate, username, SubscriptionPlan, usageTime, dateOfReservation, dateOfReturn, expirationDate
 
-//: Warning: Names of the authors should be in the following format: firstName lastName   // Otherwise the program can crash.
-//:          Year of the physical item should not be negative number! It should be the same year as the one in release date.
-//:          Condition of a physical item should be from the following: New, Good, Average, Bad, OnTheVergeOfCollapsing or Stolen
-//:          Subscription of an electronical items should be from the following: Free, Basic, Standard or Premium
-//:          If a specific data is missing, then the program may crash!
-//: Please upload correct information!
+//
 
-Book: "To Kill a Mockingbird", 9780061120084, "Harper Lee's Pulitzer Prize-winning novel set in the American South during the 1930s.", Harper Lee, Fiction, 1960, 07/11/1960, 03/29/2024, 04/12/2024, Good
-Magazine: "National Geographic", 123456, "Explore the wonders of our world through stunning photography and insightful articles.", National Geographic Society, 1234, 03/01/2024, 03/29/2024, 04/12/2024, Good
-Software: "Adobe Photoshop", 543210, "Industry-standard software for image editing and graphic design.", 09/30/1990, user456, Professional, 40, 03/29/2024, 04/12/2024, 09/30/2025
-Ssoftware: // This should not be accepted!
-Software: "Microsoft Office", 123456, "Essential productivity suite for creating documents, spreadsheets, and presentations.", 10/21/2021, user123, Premium, 324000, 03/29/2024, 04/12/2024, 10/21/2025
-Ebook: "The Great Gatsby", 9780743273565, "F. Scott Fitzgerald's classic tale of the Jazz Age and the American Dream.", F. Scott Fitzgerald, Fiction, 1925, 04/10/1925, 03/29/2024, 04/12/2024, 05/10/2024
-DVD: "Pulp Fiction", 123789, "Quentin Tarantino's groundbreaking film intertwining various storylines in Los Angeles.", Quentin Tarantino, Crime, 1994, 154, 10/14/1994, 03/29/2024, 04/12/2024, Good
+// Warning: Names of the authors should be in the following format: firstName lastName   // Otherwise the program can crash.
+//          Year of the physical item should not be negative number! It should be the same year as the one in release date.
+//          Condition of a physical item should be from the following: New, Good, Average, Bad, OnTheVergeOfCollapsing or Stolen
+//          Subscription of an electronical items should be from the following: Free, Basic, Standard or Premium
+//          If a specific data is missing, then the program may crash!
+// Please upload correct information!
+
+Book, "To Kill a Mockingbird", 9780061120084, "Harper Lee's Pulitzer Prize-winning novel set in the American South during the 1930s.", Harper Lee, Fiction, 1960, 07/11/1960, 03/29/2024, 04/12/2024, Good
+Magazine, "National Geographic", 123456, "Explore the wonders of our world through stunning photography and insightful articles.", National Geographic Society, 1234, 03/01/2024, 03/29/2024, 04/12/2024, Good
+Software, "Adobe Photoshop", 543210, "Industry-standard software for image editing and graphic design.", 09/30/1990, user456, Premium, 40, 03/29/2024, 04/12/2024, 09/30/2025
+Ssoftware, // This, should, not, be, accepted!, Even if the information after this is correct.
+Software, "Microsoft Office", 1234567, "Essential productivity suite for creating documents, spreadsheets, and presentations.", 10/21/2021, user123, Premium, 324000, 03/29/2024, 04/12/2024, 10/21/2025
+Ebook, "The Great Gatsby", 9780743273565, "F. Scott Fitzgerald's classic tale of the Jazz Age and the American Dream.", F. Scott Fitzgerald, Fiction, 1925, 04/10/1925, 03/29/2024, 04/12/2024, 05/10/2024
+DVD, "Pulp Fiction", 123789, "Quentin Tarantino's groundbreaking film intertwining various storylines in Los Angeles.", Quentin Tarantino, Crime, 1994, 154, 10/14/1994, 03/29/2024, 04/12/2024, Good
