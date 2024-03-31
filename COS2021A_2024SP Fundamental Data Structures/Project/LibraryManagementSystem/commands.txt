@@ -1,0 +1,20 @@
+// -- Those are comments for our notes and instructions.
+// You can enter the following types of commands:
+//    CheckIfLate {MM/DD/YYYY} - checks whether each item is late depending on the provided date
+//    KMP {searchString} - sorts the elements through KMP matching algorithm with provided search string
+//    DegradeCondition all/{specific ID} ./{type of Condition} - degrades the condition of a specific physical item or all of them
+//    Display physicals/electronicals/books/ebooks/magazines/DVDs/softwares/all/everything - displays on the command window the desired output of data
+//    Show physicals/electronicals/books/ebooks/magazines/DVDs/softwares/all/everything - displays on the command window the desired output of data
+//    CalculateLateFee {specific ID}/all {MM/DD/YYYY} - calculates the late fee of a specific item or all of them
+//    End program- stops the acceptance of new commands
+
+// Anything else written will not be accepted and the program will ask you for a new commands without doing anything beforehand.
+
+CheckIfLate 03/24/2024
+KMP Adobe
+CheckIfLate 10/24/2023
+
+CheckIfLate 03/24/2025
+End
+
+This should be ignored. Even though it doesn't have "//" (comments).

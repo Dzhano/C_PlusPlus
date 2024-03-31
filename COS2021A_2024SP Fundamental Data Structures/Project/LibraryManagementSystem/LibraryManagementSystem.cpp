@@ -79,8 +79,11 @@ Condition ConditionFromString(string conditionStr) {
 class Item { // Abstract class
 protected:
     string name;
+    string type;
     string ID, description;
     string releaseDate, dateOfReservation, dateOfReturn;
+
+    bool physical;
 
     void checkID(string id) {
         if (find(IDs.begin(), IDs.end(), id) != IDs.end())
@@ -94,31 +97,40 @@ public:
     // Constructors
     Item() {
         this->name = "";
+        this->type = "item";
         checkID("");
         this->description = "";
         this->releaseDate = "";
         this->dateOfReservation = "";
         this->dateOfReturn = "";
+
+        this->physical = true;
     }
 
     Item(const string& name, const string& ID, const string& description,
         const string& releaseDate, const string& dateOfReservation, const string& dateOfReturn) {
         this->name = name;
         checkID(ID);
+        this->type = "Item";
         this->description = description;
         this->releaseDate = releaseDate;
         this->dateOfReservation = dateOfReservation;
         this->dateOfReturn = dateOfReturn;
+
+        this->physical = true;
     }
 
     Item(const Item& other) { // Copy constructor
         if (this != &other) {
             this->name = other.name;
             this->ID = other.ID;
+            this->type = other.type;
             this->description = other.description;
             this->releaseDate = other.releaseDate;
             this->dateOfReservation = other.dateOfReservation;
             this->dateOfReturn = other.dateOfReturn;
+
+            this->physical = other.physical;
         }
     }
 
@@ -126,10 +138,13 @@ public:
         if (this != &other) {
             this->name = other.name;
             this->ID = other.ID;
+            this->type = other.type;
             this->description = other.description;
             this->releaseDate = other.releaseDate;
             this->dateOfReservation = other.dateOfReservation;
             this->dateOfReturn = other.dateOfReturn;
+
+            this->physical = other.physical;
         }
         return *this;
     }
@@ -137,9 +152,12 @@ public:
     // Methods
     string GetName() const { return name; }
     string GetID() const { return ID; }
+    string GetItemType() const { return type; }
     string GetDescription() const { return description; }
     string GetReleaseDate() const { return releaseDate; }
     string GetDateOfReservation() const { return dateOfReservation; }
+
+    bool IsItPhysicalOrElectronic() const { return physical; }
 
     bool isLate(string currentDate) {
         // Date format: MM/DD/Year
@@ -158,7 +176,7 @@ public:
             }
         }
     }
-    virtual double CalculateLateFee(string) = 0; // Abstract method
+    virtual string CalculateLateFee(string) = 0; // in percentages // Abstract method
 };
 
 class Physical : public Item {
@@ -168,11 +186,17 @@ public:
     // Constructors
     Physical() : Item() {
         this->condition = New;
+
+        this->type = "Physical";
+        this->physical = true;
     }
 
     Physical(const string& name, const string& ID, const string& description, 
         const string& releaseDate, const string& dateOfReservation, const string& dateOfReturn, const Condition& condition)
         : Item(name, ID, description, releaseDate, dateOfReservation, dateOfReturn) {
+        this->type = "Physical";
+        this->physical = true;
+
         this->condition = condition;
     }
 
@@ -217,7 +241,7 @@ public:
     void GetsStolen() { this->condition = Stolen; }
     bool isStolen() { return GetPhysicalCondition() == Stolen ? true : false; }
 
-    double CalculateLateFee(string currentDate) {
+    string CalculateLateFee(string currentDate) {
         // Date format: MM/DD/Year
         int fee = 0;
 
@@ -238,8 +262,8 @@ public:
             else if (daysOfBeingLate <= 7) fee /= 3; // a third of the tax
             else if (daysOfBeingLate <= 10) fee /= 2; // half of the tax
         }
-        else cout << "The item is not late. Therefore, there is no fee." << endl;
-        return fee;
+        else cout << "The physical item is not late. Therefore, there is no fee." << endl;
+        return fee + "%";
     }
 };
 
@@ -250,12 +274,18 @@ public:
     // Constructors
     Electronical() {
         this->expirationDate = "";
+
+        this->type = "Electronical";
+        this->physical = false;
     }
 
     Electronical (const string& name, const string& ID, const string& description,
         const string& releaseDate, const string& dateOfReservation, const string& dateOfReturn, const string& expirationDate)
         : Item(name, ID, description, releaseDate, dateOfReservation, dateOfReturn) {
         this->expirationDate = expirationDate;
+
+        this->type = "Electronical";
+        this->physical = false;
     }
 
     Electronical(const Electronical& other) : Item(other) { // Copy constructor
@@ -275,7 +305,7 @@ public:
     // Methods
     string GetCodeExpirationDate() const { return expirationDate; }
 
-    double CalculateLateFee(string currentDate) {
+    string CalculateLateFee(string currentDate) {
         // Date format: MM/DD/Year
         int fee = 0;
 
@@ -293,8 +323,8 @@ public:
             int daysOfBeingLate = daysBetweenTwoDates(dateOfReturn, currentDate);
             if (daysOfBeingLate <= 2) fee = 0; // no tax at all assuming that the software is returned quickly
         }
-        else cout << "The item is not late. Therefore, there is no fee." << endl;
-        return fee;
+        else return "The electronical item is not late. Therefore, there is no fee.";
+        return fee + "%";
     }
 };
 
@@ -308,6 +338,7 @@ public:
         this->author = "";
         this->genre = "";
         this->year = 2024;
+        this->type = "Book";
     }
 
     Book(const string& name, const string& ID, const string& description,
@@ -318,6 +349,7 @@ public:
         this->genre = genre;
         checkYear(year, releaseDate);
         this->year = year;
+        this->type = "Book";
     }
 
     Book(const Book& other) : Physical(other) { // Copy constructor
@@ -354,6 +386,7 @@ public:
         this->author = "";
         this->genre = "";
         this->year = 2024;
+        this->type = "Ebook";
     }
 
     Ebook(const string& name, const string& ID, const string& description,
@@ -364,6 +397,7 @@ public:
         this->genre = genre;
         checkYear(year, releaseDate);
         this->year = year;
+        this->type = "Ebook";
     }
 
     Ebook(const Ebook& other) : Electronical(other) { // Copy constructor
@@ -399,6 +433,7 @@ public:
     Magazine() : Physical() {
         this->Publisher = "";
         this->IssueNumber = "";
+        this->type = "Magazine";
     }
 
     Magazine(const string& name, const string& ID, const string& description,
@@ -407,6 +442,7 @@ public:
         : Physical(name, ID, description, releaseDate, dateOfReservation, dateOfReturn, condition) {
         this->Publisher = publisher;
         this->IssueNumber = issueNumber;
+        this->type = "Magazine";
     }
 
     Magazine(const Magazine& other) : Physical(other) { // Copy constructor
@@ -442,6 +478,7 @@ public:
         this->genre = "";
         this->year = 2024;
         this->duration = 0;
+        this->type = "DVD";
     }
 
     DVD(const string& name, const string& ID, const string& description,
@@ -453,6 +490,7 @@ public:
         checkYear(year, releaseDate);
         this->year = year;
         this->duration = duration;
+        this->type = "DVD";
     }
 
     DVD(const DVD& other) : Physical(other) { // Copy constructor
@@ -486,13 +524,14 @@ class Software : public Electronical {
 private:
     string username;
     Subscription SubscriptionPlan;
-    double usageTime;
+    double usageTime; // in minutes
 public:
     // Constructors
     Software() : Electronical() {
         this->username = "";
         this->SubscriptionPlan = Free;
-        this->usageTime = 0; // in minutes
+        this->usageTime = 0;
+        this->type = "Software";
     }
 
     Software(const string& name, const string& ID, const string& description, const string& releaseDate, 
@@ -502,6 +541,7 @@ public:
         this->username = username;
         this->SubscriptionPlan = plan;
         this->usageTime = usageTime;
+        this->type = "Software";
     }
 
     Software(const Software& other) : Electronical(other) { // Copy constructor
@@ -529,7 +569,8 @@ public:
 };
 
 
-void KMPcommand(vector<Item*> Items, string searchString) {
+// Main functions for the program
+void KMPcommand(vector<Item*>& Items, string searchString) {
     vector<pair<int, Item*>> itemsWithMatches;
 
     // Perform pattern matching
@@ -543,10 +584,10 @@ void KMPcommand(vector<Item*> Items, string searchString) {
     sort(itemsWithMatches.begin(), itemsWithMatches.end(), greater<pair<int, Item*>>());
 
 
-    cout << "Sorting complete!" << endl
+    cout << endl << "Sorting complete!" << endl
         << "Would you want to display the collected items with certain match?" << endl
         << "Or would you rather they completely replace whole list with all items?" << endl
-        << "Select: \"Display\" or \"Replace\" (Make sure you write it as it is said, or else the program will continue to the next command.):";
+        << "Select: \"Display\" or \"Replace\" (Make sure you write it as it is said, or else the program will continue to the next command.): ";
     string choice;
     cin >> choice;
     if (choice == "Display") {
@@ -555,7 +596,7 @@ void KMPcommand(vector<Item*> Items, string searchString) {
         for (; i < itemsWithMatches.size(); i++) {
             cout << "Item " << i + 1 << ":" << endl;
             cout << "Name: " << itemsWithMatches[i].second->GetName() << endl;
-            cout << "GUID: " << itemsWithMatches[i].second->GetID() << endl;
+            cout << "ID: " << itemsWithMatches[i].second->GetID() << endl;
             cout << endl;
         }
         if (i == 0) cout << "None" << endl;
@@ -566,6 +607,146 @@ void KMPcommand(vector<Item*> Items, string searchString) {
             Items.push_back(itemsWithMatches[i].second);
     }
 };
+
+void displayEverything(vector<Item*>& Items) {
+    for (int i = 0; i < Items.size(); i++)
+    {
+        string type = Items[i]->GetItemType();
+
+        cout << "Item " << i + 1 << ":" << endl;
+        cout << "Name: " << Items[i]->GetName() << endl;
+        cout << "ID: " << Items[i]->GetID() << endl;
+        cout << "Type: " << type << endl;
+        cout << "Description: " << Items[i]->GetDescription() << endl;
+
+        if (type == "Book") {
+            Book* book = dynamic_cast<Book*>(Items[i]);
+            cout << "Author: " << book->GetAuthor() << endl;
+            cout << "Genre: " << book->GetGenre() << endl;
+            cout << "Year: " << book->GetYear() << endl;
+            cout << "Physical condition: " << book->GetPhysicalCondition() << endl;
+        }
+        else if (type == "Ebook") {
+            Ebook* ebook = dynamic_cast<Ebook*>(Items[i]);
+            cout << "Author: " << ebook->GetAuthor() << endl;
+            cout << "Genre: " << ebook->GetGenre() << endl;
+            cout << "Year: " << ebook->GetYear() << endl;
+            cout << "Digital code's expiration date: " << ebook->GetCodeExpirationDate() << endl;
+        }
+        else if (type == "Magazine") {
+            Magazine* magazine = dynamic_cast<Magazine*>(Items[i]);
+            cout << "Publisher: " << magazine->GetPublisher() << endl;
+            cout << "Issue Date: " << magazine->GetIssueNumber() << endl;
+            cout << "Physical condition: " << magazine->GetPhysicalCondition() << endl;
+        }
+        else if (type == "DVD") {
+            DVD* dvd = dynamic_cast<DVD*>(Items[i]);
+            cout << "Director: " << dvd->GetDirector() << endl;
+            cout << "Genre: " << dvd->GetGenre() << endl;
+            cout << "Year: " << dvd->GetYear() << endl;
+            cout << "Duration: " << dvd->GetDuration() << endl;
+            cout << "Physical condition: " << dvd->GetPhysicalCondition() << endl;
+        }
+        else if (type == "Software") {
+            Software* software = dynamic_cast<Software*>(Items[i]);
+            cout << "Username: " << software->GetUsername() << endl;
+            cout << "Subscription plan: " << software->GetSubscriptionPlan() << endl;
+            cout << "Usage time: " << software->GetUsageTime() << endl;
+            cout << "Digital code's expiration date: " << software->GetCodeExpirationDate() << endl;
+        }
+
+        cout << "Release date: " << Items[i]->GetReleaseDate() << endl;
+        cout << "Date of reservation: " << Items[i]->GetDateOfReservation() << endl;
+
+        cout << endl;
+    }
+}
+
+void display(vector<Item*>& Items, string type) {
+    vector<Item*> FilteredForDisplay;
+    if (type == "physicals")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.IsItPhysicalOrElectronic() == true; });
+    else if (type == "electronicals")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.IsItPhysicalOrElectronic() == false; });
+    else if (type == "books")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "Book"; });
+    else if (type == "ebooks")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "Ebook"; });
+    else if (type == "magazines")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "Magazine"; });
+    else if (type == "DVDs")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "DVD"; });
+    else if (type == "softwares")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "Software"; });
+    /*else if (type == "late")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.isLate() == true; });*/ // potential idea
+    else if (type == "all" || type == "everything") FilteredForDisplay = Items;
+
+    displayEverything(FilteredForDisplay);
+}
+
+void degradingCondition(vector<Item*>& Items, string target, string newCondition) {
+    if (target == "all")
+    {
+        for (Item* i : Items)
+        {
+            if (i->IsItPhysicalOrElectronic() == true)
+            {
+                if (newCondition == ".")
+                    dynamic_cast<Physical*>(i)->DegradeCondition();
+                else dynamic_cast<Physical*>(i)->DegradeCondition(ConditionFromString(newCondition));
+            }
+        }
+    }
+    else
+    {
+        if (count(Items.begin(), Items.end(), target) > 0)
+        {
+            for (Item* i : Items) {
+                if (i->GetID() == target)
+                {
+                    if (newCondition == ".")
+                        dynamic_cast<Physical*>(i)->DegradeCondition();
+                    else dynamic_cast<Physical*>(i)->DegradeCondition(ConditionFromString(newCondition));
+
+                    break;
+                }
+            }
+        }
+        else cout << "There is no such item in our library." << endl;
+    }
+}
+
+void LateFeeCalculating(vector<Item*>& Items, string target, string date) {
+    if (target == "all") for (int i = 0; i < Items.size(); i++)
+    {
+        cout << "Item " << i + 1 << ":" << endl;
+        cout << "Name: " << Items[i]->GetName() << endl;
+        cout << "ID: " << Items[i]->GetID() << endl;
+        cout << "Type: " << Items[i]->GetItemType() << endl;
+        cout << "Late fee for " << date << ": " << Items[i]->CalculateLateFee(date) << endl;
+        cout << endl;
+    }
+    else
+    {
+        if (count(Items.begin(), Items.end(), target) > 0)
+        {
+            for (Item* i : Items) {
+                if (i->GetID() == target)
+                {
+                    cout << "Name: " << i->GetName() << endl;
+                    cout << "ID: " << i->GetID() << endl;
+                    cout << "Type: " << i->GetItemType() << endl;
+                    cout << "Late fee for " << date << ": " << i->CalculateLateFee(date) << endl;
+                    cout << endl;
+
+                    break;
+                }
+            }
+        }
+        else cout << "There is no such item in our library." << endl;
+    }
+}
 
 
 // Main program
@@ -579,7 +760,7 @@ int main()
         << "If there are any problems, feel free to contact our support team :)" << endl
         << endl;
 
-    string fileChoice = "items.txt";
+    string fileChoice = "";
     while (fileChoice != "items.txt" && fileChoice != "another")
     {
         cout << "What file would you want to use? \"items.txt\" or another? Answer explicitly: ";
@@ -606,7 +787,7 @@ int main()
     vector<Item*> Items;
     string line;
 
-    ifstream itemsFile(fileChoice);
+    ifstream itemsFile("items.txt");
     while (getline(itemsFile, line))
     {
         stringstream iss(line);
@@ -742,8 +923,8 @@ int main()
         ifstream commandsFile("commands.txt");
         while (getline(commandsFile, line)) {
             stringstream iss(line);
-            string command;
-            iss >> command;
+            string command, element;
+            iss >> command >> element;
 
             if (command == "//") continue;
 
@@ -758,26 +939,42 @@ int main()
                     string late = Items[i]->isLate(date) ? "Late" : "Still on time";
                     cout << late << endl;
                 }
+                cout << endl;
             }
-            else if (command == "KMP") {
-                string searchString;
-                iss >> searchString;
-
-                KMPcommand(Items, searchString);
+            else if (command == "CalculateLateFee")
+            {
+                // Date format: MM/DD/Year
+                string date;
+                iss >> date;
+                LateFeeCalculating(Items, element, date);
             }
+            else if (command == "KMP") KMPcommand(Items, element);
+            // else if (command == "") GetCodeExpirationDate()
+            // else if (command == "") GetsStolen()
+            else if (command == "DegradeCondition") {
+                string newCondition;
+                iss >> newCondition;
+                degradingCondition(Items, element, newCondition);                
+            }
+            else if (command == "Show" || command == "Display") display(Items, element);
+            else if (command == "End" && element == "program") break;
         }
     }
     else if (commandOption == "Window")
     {
-        cout << "You can enter the following types of commands:" << endl
-            << "\"CheckIfLate {MM/DD/Year}\" - checks whether each item is late depending on the provided date" << endl
+        cout << endl << "You can enter the following types of commands:" << endl
+            << "\"CheckIfLate {MM/DD/YYYY}\" - checks whether each item is late depending on the provided date" << endl
             << "\"KMP {searchString}\" - sorts the elements through KMP matching algorithm with provided search string" << endl
-            << "\"End\" - stops the acceptance of new commands" << endl
+            << "\"DegradeCondition all/{specific ID} ./{type of Condition}\" - degrades the condition of a specific physical item or all of them" << endl
+            << "\"Display physicals/electronicals/books/ebooks/magazines/DVDs/softwares/all/everything\" - displays on the command window the desired output of data" << endl
+            << "\"Show physicals/electronicals/books/ebooks/magazines/DVDs/softwares/all/everything\" - displays on the command window the desired output of data" << endl
+            << "\"CalculateLateFee {specific ID}/all {MM/DD/YYYY}\" - calculates the late fee of a specific item or all of them" << endl
+            << "\"End program\" - stops the acceptance of new commands" << endl
             << "Anything else written will not be accepted and the program will ask you for a new commands without doing anything beforehand." << endl;
         string command = "";
-        while (command != "End")
+        while (true)
         {
-            string value;
+            string value = "";
             cout << "Command: ";
             cin >> command >> value;
 
@@ -791,67 +988,27 @@ int main()
                     cout << late << endl;
                 }
             }
-            else if (command == "KMP") {
-                KMPcommand(Items, value);
+            else if (command == "CalculateLateFee")
+            {
+                // Date format: MM/DD/Year
+                string date;
+                cin >> date;
+                LateFeeCalculating(Items, value, date);
             }
+            else if (command == "KMP") KMPcommand(Items, value);
+            // else if (command == "") GetCodeExpirationDate()
+            // else if (command == "") GetsStolen()
+            else if (command == "DegradeCondition") {
+                string newCondition;
+                cin >> newCondition;
+                degradingCondition(Items, value, newCondition);
+            }
+            else if (command == "Show" || command == "Display") display(Items, value);
+            else if (command == "End" && value == "program") break;
         }
-    }
+    } 
 
-    
-
-    for (int i = 0; i < Items.size(); i++)
-    {
-        const type_info& type = typeid(Items[i]);
-
-        cout << "Item " << i + 1 << ":" << endl;
-        cout << "Name: " << Items[i]->GetName() << endl;
-        cout << "ID: " << Items[i]->GetID() << endl;
-        cout << "Type: " << type.name() << endl;
-        cout << "Description: " << Items[i]->GetDescription() << endl;
-
-        if (type == typeid(Book)) {
-            Book* book = dynamic_cast<Book*>(Items[i]);
-            cout << "Author: " << book->GetAuthor() << endl;
-            cout << "Genre: " << book->GetGenre() << endl;
-            cout << "Year: " << book->GetYear() << endl;
-            cout << "Physical condition: " << book->GetPhysicalCondition() << endl;
-        }
-        else if (type == typeid(Ebook)) {
-            Ebook* ebook = dynamic_cast<Ebook*>(Items[i]);
-            cout << "Author: " << ebook->GetAuthor() << endl;
-            cout << "Genre: " << ebook->GetGenre() << endl;
-            cout << "Year: " << ebook->GetYear() << endl;
-            cout << "Digital code's expiration date: " << ebook->GetCodeExpirationDate() << endl;
-        }
-        else if (type == typeid(Magazine)) {
-            Magazine* magazine = dynamic_cast<Magazine*>(Items[i]);
-            cout << "Publisher: " << magazine->GetPublisher() << endl;
-            cout << "Issue Date: " << magazine->GetIssueNumber() << endl;
-            cout << "Physical condition: " << magazine->GetPhysicalCondition() << endl;
-        }
-        else if (type == typeid(DVD)) {
-            DVD* dvd = dynamic_cast<DVD*>(Items[i]);
-            cout << "Director: " << dvd->GetDirector() << endl;
-            cout << "Genre: " << dvd->GetGenre() << endl;
-            cout << "Year: " << dvd->GetYear() << endl;
-            cout << "Duration: " << dvd->GetDuration() << endl;
-            cout << "Physical condition: " << dvd->GetPhysicalCondition() << endl;
-        }
-        else if (type == typeid(Software)) {
-            Software* software = dynamic_cast<Software*>(Items[i]);
-            cout << "Username: " << software->GetUsername() << endl;
-            cout << "Subscription plan: " << software->GetSubscriptionPlan() << endl;
-            cout << "Usage time: " << software->GetUsageTime() << endl;
-            cout << "Digital code's expiration date: " << software->GetCodeExpirationDate() << endl;
-        }
-
-        cout << "Release date: " << Items[i]->GetReleaseDate() << endl;
-        cout << "Date of reservation: " << Items[i]->GetDateOfReservation() << endl;
-
-        cout << endl;
-    }
-
-    cout << "Would you want to export the items' data in another file? Yes or No (answer explicitly): ";
+    cout << "Would you want to export the items' data in another file? Yes or No (answer explicitly - if not, it will be considered as \"No\"): ";
     string exporting;
     cin >> exporting;
     if (exporting == "Yes")
@@ -861,35 +1018,35 @@ int main()
         {
             for (int i = 0; i < Items.size(); i++)
             {
-                const type_info& type = typeid(Items[i]);
+               string type = Items[i]->GetItemType();
 
                 outputFile << "Item " << i + 1 << ":" << endl;
                 outputFile << "Name: " << Items[i]->GetName() << endl;
                 outputFile << "ID: " << Items[i]->GetID() << endl;
-                outputFile << "Type: " << type.name() << endl;
+                outputFile << "Type: " << type << endl;
                 outputFile << "Description: " << Items[i]->GetDescription() << endl;
 
-                if (type == typeid(Book)) {
+                if (type == "Book") {
                     Book* book = dynamic_cast<Book*>(Items[i]);
                     outputFile << "Author: " << book->GetAuthor() << endl;
                     outputFile << "Genre: " << book->GetGenre() << endl;
                     outputFile << "Year: " << book->GetYear() << endl;
                     outputFile << "Physical condition: " << book->GetPhysicalCondition() << endl;
                 }
-                else if (type == typeid(Ebook)) {
+                else if (type == "Ebook") {
                     Ebook* ebook = dynamic_cast<Ebook*>(Items[i]);
                     outputFile << "Author: " << ebook->GetAuthor() << endl;
                     outputFile << "Genre: " << ebook->GetGenre() << endl;
                     outputFile << "Year: " << ebook->GetYear() << endl;
                     outputFile << "Digital code's expiration date: " << ebook->GetCodeExpirationDate() << endl;
                 }
-                else if (type == typeid(Magazine)) {
+                else if (type == "Magazine") {
                     Magazine* magazine = dynamic_cast<Magazine*>(Items[i]);
                     outputFile << "Publisher: " << magazine->GetPublisher() << endl;
                     outputFile << "Issue Date: " << magazine->GetIssueNumber() << endl;
                     outputFile << "Physical condition: " << magazine->GetPhysicalCondition() << endl;
                 }
-                else if (type == typeid(DVD)) {
+                else if (type == "DVD") {
                     DVD* dvd = dynamic_cast<DVD*>(Items[i]);
                     outputFile << "Director: " << dvd->GetDirector() << endl;
                     outputFile << "Genre: " << dvd->GetGenre() << endl;
@@ -897,7 +1054,7 @@ int main()
                     outputFile << "Duration: " << dvd->GetDuration() << endl;
                     outputFile << "Physical condition: " << dvd->GetPhysicalCondition() << endl;
                 }
-                else if (type == typeid(Software)) {
+                else if (type == "Software") {
                     Software* software= dynamic_cast<Software*>(Items[i]);
                     outputFile << "Username: " << software->GetUsername() << endl;
                     outputFile << "Subscription plan: " << software->GetSubscriptionPlan() << endl;
