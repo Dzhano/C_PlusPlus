@@ -11,4 +11,6 @@ D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Da
 D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\KMP.cpp(59,28): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
   (compiling source file 'LibraryManagementSystem.cpp')
   
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(238,1): warning C4715: 'Physical::GetPhysicalCondition': not all control paths return a value
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(607,1): warning C4715: 'Software::GetSubscriptionPlan': not all control paths return a value
   LibraryManagementSystem.vcxproj -> D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\x64\Debug\LibraryManagementSystem.exe

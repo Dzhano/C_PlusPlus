@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include "KMP.cpp"
 
 using namespace std;
@@ -156,6 +157,7 @@ public:
     string GetDescription() const { return description; }
     string GetReleaseDate() const { return releaseDate; }
     string GetDateOfReservation() const { return dateOfReservation; }
+    string GetDateOfReturn() const { return dateOfReturn; }
 
     bool IsItPhysicalOrElectronic() const { return physical; }
 
@@ -215,7 +217,25 @@ public:
     }
 
     // Methods
-    Condition GetPhysicalCondition() const { return condition; }
+    string GetPhysicalCondition() const {
+        // I tried to find another way without using switch-case but there is no direct way of converting enum variable into a string.
+        switch (condition)
+        {
+            case New:
+                return "New";
+            case Good:
+                return "Good";
+            case Average:
+                return "Average";
+            case Bad:
+                return "Bad";
+            case OnTheVergeOfCollapsing:
+                return "On the verge of collapsing";
+            case Stolen:
+                return "Stolen";
+            // There is no need for a default. The condition cannot be wrong. Especially if it has reached the stage of being inside a physical item.
+        }
+    }
     void DegradeCondition() {
         switch (condition)
         {
@@ -239,11 +259,11 @@ public:
     }
 
     void GetsStolen() { this->condition = Stolen; }
-    bool isStolen() { return GetPhysicalCondition() == Stolen ? true : false; }
+    bool isStolen() { return this->condition == Stolen ? true : false; }
 
     string CalculateLateFee(string currentDate) {
         // Date format: MM/DD/Year
-        int fee = 0;
+        double fee = 0;
 
         if (isLate(currentDate))
         {
@@ -262,8 +282,11 @@ public:
             else if (daysOfBeingLate <= 7) fee /= 3; // a third of the tax
             else if (daysOfBeingLate <= 10) fee /= 2; // half of the tax
         }
-        else cout << "The physical item is not late. Therefore, there is no fee." << endl;
-        return fee + "%";
+        else return "The physical item is not late. Therefore, there is no fee.";
+        
+        stringstream stream;
+        stream << std::fixed << setprecision(2) << fee;
+        return stream.str() + "%";
     }
 };
 
@@ -275,7 +298,7 @@ public:
     Electronical() {
         this->expirationDate = "";
 
-        this->type = "Electronical";
+        this->type = "Electronic";
         this->physical = false;
     }
 
@@ -284,7 +307,7 @@ public:
         : Item(name, ID, description, releaseDate, dateOfReservation, dateOfReturn) {
         this->expirationDate = expirationDate;
 
-        this->type = "Electronical";
+        this->type = "Electronic";
         this->physical = false;
     }
 
@@ -307,7 +330,7 @@ public:
 
     string CalculateLateFee(string currentDate) {
         // Date format: MM/DD/Year
-        int fee = 0;
+        double fee = 0;
 
         if (isLate(currentDate))
         {
@@ -324,7 +347,10 @@ public:
             if (daysOfBeingLate <= 2) fee = 0; // no tax at all assuming that the software is returned quickly
         }
         else return "The electronical item is not late. Therefore, there is no fee.";
-        return fee + "%";
+        
+        stringstream stream;
+        stream << std::fixed << setprecision(2) << fee;
+        return stream.str() + "%";
     }
 };
 
@@ -564,7 +590,21 @@ public:
 
     // Methods
     string GetUsername() const { return username; }
-    Subscription GetSubscriptionPlan() const { return SubscriptionPlan; }
+    string GetSubscriptionPlan() const { 
+        // I tried to find another way without using switch-case but there is no direct way of converting enum variable into a string.
+        switch (SubscriptionPlan)
+        {
+            case Free:
+                return "Free";
+            case Basic:
+                return "Basic";
+            case Standard:
+                return "Standard";
+            case Premium:
+                return "Premium";
+                // There is no need for a default. The plan cannot be wrong. Especially if it has reached the stage of being inside a software class.
+        }
+    }
     double GetUsageTime() const { return usageTime; }
 };
 
@@ -657,6 +697,7 @@ void displayEverything(vector<Item*>& Items) {
 
         cout << "Release date: " << Items[i]->GetReleaseDate() << endl;
         cout << "Date of reservation: " << Items[i]->GetDateOfReservation() << endl;
+        cout << "Date of return: " << Items[i]->GetDateOfReturn() << endl;
 
         cout << endl;
     }
@@ -665,26 +706,28 @@ void displayEverything(vector<Item*>& Items) {
 void display(vector<Item*>& Items, string type) {
     vector<Item*> FilteredForDisplay;
     if (type == "physicals")
-        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.IsItPhysicalOrElectronic() == true; });
-    else if (type == "electronicals")
-        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.IsItPhysicalOrElectronic() == false; });
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->IsItPhysicalOrElectronic() == true; });
+    else if (type == "electronics")
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->IsItPhysicalOrElectronic() == false; });
     else if (type == "books")
-        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "Book"; });
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetItemType() == "Book"; });
     else if (type == "ebooks")
-        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "Ebook"; });
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetItemType() == "Ebook"; });
     else if (type == "magazines")
-        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "Magazine"; });
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetItemType() == "Magazine"; });
     else if (type == "DVDs")
-        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "DVD"; });
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetItemType() == "DVD"; });
     else if (type == "softwares")
-        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.GetItemType() == "Software"; });
+        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetItemType() == "Software"; });
     /*else if (type == "late")
         copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.isLate() == true; });*/ // potential idea
     else if (type == "all" || type == "everything") FilteredForDisplay = Items;
+    // else copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetID() == type; }); // Potential idea. Doesn't work for some reason.
 
     displayEverything(FilteredForDisplay);
 }
 
+// Test the two for this approach
 void degradingCondition(vector<Item*>& Items, string target, string newCondition) {
     if (target == "all")
     {
@@ -700,8 +743,9 @@ void degradingCondition(vector<Item*>& Items, string target, string newCondition
     }
     else
     {
-        if (count(Items.begin(), Items.end(), target) > 0)
+        if (find(IDs.begin(), IDs.end(), target) != IDs.end())
         {
+            bool noItem = true;
             for (Item* i : Items) {
                 if (i->GetID() == target)
                 {
@@ -709,9 +753,12 @@ void degradingCondition(vector<Item*>& Items, string target, string newCondition
                         dynamic_cast<Physical*>(i)->DegradeCondition();
                     else dynamic_cast<Physical*>(i)->DegradeCondition(ConditionFromString(newCondition));
 
+                    noItem = false;
+
                     break;
                 }
             }
+            if (noItem) cout << "The item is not physical." << endl;
         }
         else cout << "There is no such item in our library." << endl;
     }
@@ -729,7 +776,7 @@ void LateFeeCalculating(vector<Item*>& Items, string target, string date) {
     }
     else
     {
-        if (count(Items.begin(), Items.end(), target) > 0)
+        if (find(IDs.begin(), IDs.end(), target) != IDs.end())
         {
             for (Item* i : Items) {
                 if (i->GetID() == target)
@@ -748,6 +795,72 @@ void LateFeeCalculating(vector<Item*>& Items, string target, string date) {
     }
 }
 
+// Test the two for this approach
+void ItemExpirationDate(vector<Item*>& ElectronicItems, string target) {
+    if (target == "all") for (int i = 0; i < ElectronicItems.size(); i++)
+    {
+        
+        cout << "Item " << i + 1 << ":" << endl;
+        cout << "Name: " << ElectronicItems[i]->GetName() << endl;
+        cout << "ID: " << ElectronicItems[i]->GetID() << endl;
+        cout << "Type: " << ElectronicItems[i]->GetItemType() << endl;
+
+        Electronical* eItem = dynamic_cast<Electronical*>(ElectronicItems[i]);
+        cout << "Expiration date: " << eItem->GetCodeExpirationDate() << endl;
+        cout << endl;
+    }
+    else
+    {
+        if (find(IDs.begin(), IDs.end(), target) != IDs.end())
+        {
+            bool noItem = true;
+            for (Item* i : ElectronicItems) {
+                if (i->GetID() == target)
+                {
+                    cout << "Name: " << i->GetName() << endl;
+                    cout << "ID: " << i->GetID() << endl;
+                    cout << "Type: " << i->GetItemType() << endl;
+
+                    Electronical* eItem = dynamic_cast<Electronical*>(i);
+                    cout << "Expiration date: " << eItem->GetCodeExpirationDate() << endl;
+                    cout << endl;
+
+                    noItem = false;
+                    break;
+                }
+            }
+            if (noItem) cout << "The item is not electronic." << endl;
+        }
+        else cout << "There is no such electronic item in our library." << endl;
+    }
+}
+
+void Stealing(vector<Item*>& StolenItems, string target) {
+    if (target == "all") for (Item* i : StolenItems) {
+        Physical* physicalItem = dynamic_cast<Physical*>(i);
+        physicalItem->GetsStolen();
+    }
+    else
+    {
+        if (find(IDs.begin(), IDs.end(), target) != IDs.end())
+        {
+            bool noItem = true;
+            for (Item* i : StolenItems) {
+                if (i->GetID() == target)
+                {
+                    Physical* physicalItem = dynamic_cast<Physical*>(i);
+                    physicalItem->GetsStolen();
+
+                    noItem = false;
+                    break;
+                }
+            }
+            if (noItem) cout << "The item is not physical." << endl;
+        }
+        else cout << "There is no such item in our library." << endl;
+    }
+}
+
 
 // Main program
 int main()
@@ -760,7 +873,7 @@ int main()
         << "If there are any problems, feel free to contact our support team :)" << endl
         << endl;
 
-    string fileChoice = "";
+    string fileChoice = "items.txt";
     while (fileChoice != "items.txt" && fileChoice != "another")
     {
         cout << "What file would you want to use? \"items.txt\" or another? Answer explicitly: ";
@@ -911,7 +1024,7 @@ int main()
 
     cout << "How would you like to send commands to the program?" << endl
         << "With the \"commands.txt\" file (beforehand prepared) or from the command window directly (at the moment)?" << endl;
-    string commandOption = "";
+    string commandOption = "Window";
     while (commandOption != "File" && commandOption != "Window")
     {
         cout << "Please select \"File\" or \"Window\": ";
@@ -949,12 +1062,24 @@ int main()
                 LateFeeCalculating(Items, element, date);
             }
             else if (command == "KMP") KMPcommand(Items, element);
-            // else if (command == "") GetCodeExpirationDate()
-            // else if (command == "") GetsStolen()
+            else if (command == "GetCodeExpirationDate") {
+                vector<Item*> ElectronicItems;
+                copy_if(Items.begin(), Items.end(), back_inserter(ElectronicItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == false; });
+                ItemExpirationDate(ElectronicItems, element);
+            }
+            else if (command == "GetsStolen") {
+                vector<Item*> StolenItems;
+                copy_if(Items.begin(), Items.end(), back_inserter(StolenItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == true; });
+                Stealing(StolenItems, element);
+            }
             else if (command == "DegradeCondition") {
+                vector<Item*> PhysicalItems;
+                copy_if(Items.begin(), Items.end(), back_inserter(PhysicalItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == true; });
+
                 string newCondition;
                 iss >> newCondition;
-                degradingCondition(Items, element, newCondition);                
+
+                degradingCondition(PhysicalItems, element, newCondition);
             }
             else if (command == "Show" || command == "Display") display(Items, element);
             else if (command == "End" && element == "program") break;
@@ -962,15 +1087,23 @@ int main()
     }
     else if (commandOption == "Window")
     {
-        cout << endl << "You can enter the following types of commands:" << endl
-            << "\"CheckIfLate {MM/DD/YYYY}\" - checks whether each item is late depending on the provided date" << endl
-            << "\"KMP {searchString}\" - sorts the elements through KMP matching algorithm with provided search string" << endl
-            << "\"DegradeCondition all/{specific ID} ./{type of Condition}\" - degrades the condition of a specific physical item or all of them" << endl
-            << "\"Display physicals/electronicals/books/ebooks/magazines/DVDs/softwares/all/everything\" - displays on the command window the desired output of data" << endl
-            << "\"Show physicals/electronicals/books/ebooks/magazines/DVDs/softwares/all/everything\" - displays on the command window the desired output of data" << endl
-            << "\"CalculateLateFee {specific ID}/all {MM/DD/YYYY}\" - calculates the late fee of a specific item or all of them" << endl
-            << "\"End program\" - stops the acceptance of new commands" << endl
-            << "Anything else written will not be accepted and the program will ask you for a new commands without doing anything beforehand." << endl;
+        string commands = "\nYou can enter the following types of commands:\n\n"
+
+            "\"CheckIfLate {MM/DD/YYYY}\" - checks whether each item is late depending on the provided date\n"
+            "\"KMP {searchString}\" - sorts the elements through KMP matching algorithm with provided search string\n"
+            "\"DegradeCondition all/{specific ID} ./{type of Condition}\" - degrades the condition of a specific physical item or all of them\n"
+            // Fix the date calculation.
+            "\"CalculateLateFee {specific ID}/all {MM/DD/YYYY}\" - calculates the late fee of a specific item or all of them\n"
+            "\"GetCodeExpirationDate {specific ID}/all\"\n"
+            "\"GetsStolen {specific ID}/all\"\n"
+
+            "\"Display physicals / electronics / books / ebooks / magazines / DVDs / softwares / all / everything\" - displays on the command window the desired output of data\n"
+            "\"Show / electronics / books / ebooks / magazines / DVDs / softwares / all / everything\" - displays on the command window the desired output of data\n\n" // Same as the previous one
+            "\"Show commands\" - display the current commands again. Useful if you do not want to scroll all the way up to see what functions you can do.\n"
+            "\"End program\" - stops the acceptance of new commands\n"
+            "Anything else written will not be accepted and the program will ask you for a new commands without doing anything beforehand.\n\n";
+        cout << commands;
+
         string command = "";
         while (true)
         {
@@ -996,13 +1129,26 @@ int main()
                 LateFeeCalculating(Items, value, date);
             }
             else if (command == "KMP") KMPcommand(Items, value);
-            // else if (command == "") GetCodeExpirationDate()
-            // else if (command == "") GetsStolen()
+            else if (command == "GetCodeExpirationDate") {
+                vector<Item*> ElectronicItems;
+                copy_if(Items.begin(), Items.end(), back_inserter(ElectronicItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == false; });
+                ItemExpirationDate(ElectronicItems, value);
+            }
+            else if (command == "GetsStolen") {
+                vector<Item*> StolenItems;
+                copy_if(Items.begin(), Items.end(), back_inserter(StolenItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == true; });
+                Stealing(StolenItems, value);
+            }
             else if (command == "DegradeCondition") {
+                vector<Item*> PhysicalItems;
+                copy_if(Items.begin(), Items.end(), back_inserter(PhysicalItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == true; });
+                                
                 string newCondition;
                 cin >> newCondition;
-                degradingCondition(Items, value, newCondition);
+
+                degradingCondition(PhysicalItems, value, newCondition);
             }
+            else if (command == "Show" && value == "commands") cout << commands;
             else if (command == "Show" || command == "Display") display(Items, value);
             else if (command == "End" && value == "program") break;
         }
@@ -1073,4 +1219,4 @@ int main()
     }
 
     Items.clear(); // Clearing the vector
-}
+};
