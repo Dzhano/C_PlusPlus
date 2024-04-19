@@ -11,6 +11,11 @@ D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Da
 D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\KMP.cpp(59,28): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
   (compiling source file 'LibraryManagementSystem.cpp')
   
-D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(238,1): warning C4715: 'Physical::GetPhysicalCondition': not all control paths return a value
-D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(607,1): warning C4715: 'Software::GetSubscriptionPlan': not all control paths return a value
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(20,18): warning C4129: '/': unrecognized character escape sequence
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(21,5): warning C4129: '/': unrecognized character escape sequence
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(22,5): warning C4129: '/': unrecognized character escape sequence
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(23,5): warning C4129: '/': unrecognized character escape sequence
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(101,29): warning C4244: 'return': conversion from '__int64' to 'int', possible loss of data
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(268,1): warning C4715: 'Physical::GetPhysicalCondition': not all control paths return a value
+D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\LibraryManagementSystem\LibraryManagementSystem.cpp(634,1): warning C4715: 'Software::GetSubscriptionPlan': not all control paths return a value
   LibraryManagementSystem.vcxproj -> D:\AUBG\Classes\Computer Science (COS)\C_PlusPlus\COS2021A_2024SP Fundamental Data Structures\Project\x64\Debug\LibraryManagementSystem.exe

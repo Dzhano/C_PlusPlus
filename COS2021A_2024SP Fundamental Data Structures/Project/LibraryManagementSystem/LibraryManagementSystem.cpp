@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+#include <regex>
+#include <chrono>
+#include <thread>
 #include "KMP.cpp"
 
 using namespace std;
@@ -14,8 +17,29 @@ enum Condition { New, Good, Average, Bad, OnTheVergeOfCollapsing, Stolen};
 enum Subscription { Free, Basic, Standard, Premium};
 
 vector<string> IDs;
+regex dateFormat("^((0[13578]|1[02])\/(0[1-9]|[12][0-9]|3[01])\/((01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20)[0-9]{2}))|"
+    "((0[469]|11)\/(0[1-9]|[12][0-9]|30)\/(01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20)[0-9]{2})|"
+    "((02)\/(0[1-9]|1[0-9]|2[0-8])\/(01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20)[0-9]{2})|"
+    "((02)\/29\/(((01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20)(04|08|[2468][048]|[13579][26]))|2000))$");
 
 // Functions
+bool isValidDateFormat(string date) {
+    if (date.length() == 10 && regex_match(date, dateFormat)) return true;
+    else
+    {
+        cout << "The date given for checking is not in the correct format!" << endl;
+        return false;
+    }
+}
+
+bool isValidDateFormatForItem(string date, string dateType, string id) {
+    if (date.length() == 10 && regex_match(date, dateFormat)) return true;
+    else {
+        cout << "The " << dateType << " of the item with ID " << id << " is not in the correct format! Therefore the item will not be created!" << endl;
+        return false;
+    } 
+}
+
 void separateDate(string date, int& month, int& day, int& year) {
 
     // Create a string stream from the date string
@@ -26,13 +50,32 @@ void separateDate(string date, int& month, int& day, int& year) {
     ss >> month >> delimiter >> day >> delimiter >> year;
 }
 
-void checkYear(int year, string date) {
-    if (year < 0000) throw invalid_argument("The year cannot be a negative number.");
-    else if (year > 2024) throw invalid_argument("The applied year cannot be in the future!");
+bool checkYear(string y, string date, string itemType, string ID) {
+    if (!regex_match(y, regex("^\\d{4}$"))) {
+        cout << "The year of the " << itemType << " with ID: " << ID << " is not in the correct format! Therefore the item will not be created!" << endl;
+        return false;
+    }
+    
+    int year = stoi(y);
 
     int month, day, otherYear;
     separateDate(date, month, day, otherYear);
-    if (otherYear != year) throw invalid_argument("The year cannot be different from the release date's one.");
+    if (otherYear != year) {
+        cout << "The year of the " << itemType << " with ID: " << ID << " cannot be different from the release date's one. Therefore the item will not be created!" << endl;
+        return false;
+    }
+
+    if (year < 100) {
+        // There can be books even from the year 100. Even if it is unlikely.
+        cout << "The year of the " << itemType << " with ID: " << ID << " cannot be bellow the year 100. There is no place for such books in our library. Therefore the item will not be created." << endl;
+        return false;
+    }
+    else if (year > 2024) {
+        cout << "The year of the " << itemType << " with ID: " << ID << " cannot be in the future! Therefore the item will not be created!" << endl;
+        return false;
+    }
+
+    return true;
 }
 
 int daysInMonth(int month, int year) {
@@ -47,22 +90,15 @@ int daysInMonth(int month, int year) {
 int daysBetweenTwoDates(string oldDate, string laterDate) {
     int oldMonth, oldDay, oldYear;
     separateDate(oldDate, oldMonth, oldDay, oldYear);
+    struct tm starttm = {0, 0, 0, oldDay, oldMonth - 1, oldYear - 1900};
+    time_t start = mktime(&starttm); // Seconds for the first date.
+
     int laterMonth, laterDay, laterYear;
     separateDate(laterDate, laterMonth, laterDay, laterYear);
+    struct tm endtm = { 0, 0, 0, laterDay, laterMonth - 1, laterYear - 1900 };
+    time_t end = mktime(&endtm); // Seconds for the second date.
 
-    int days = 0;
-    for (int year = oldYear; year < laterYear; ++year)
-        days += ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) ? 366 : 365;
-
-    for (int month = 1; month < laterMonth; ++month) {
-        days -= daysInMonth(month, oldYear);
-    }
-    days -= oldDay;
-    for (int month = 1; month < laterMonth; ++month) {
-        days += daysInMonth(month, laterYear);
-    }
-    days += laterDay;
-    return days;
+    return abs(end - start) / 86400; // Converting the difference between the seconds of the two days into days.
 }
 
 Condition ConditionFromString(string conditionStr) {
@@ -72,7 +108,7 @@ Condition ConditionFromString(string conditionStr) {
     else if (conditionStr == "Bad") return Bad;
     else if (conditionStr == "OnTheVergeOfCollapsing") return OnTheVergeOfCollapsing;
     else if (conditionStr == "Stolen") return Stolen;
-    else throw new invalid_argument("There is no such type of condition for the physical item!");
+    else throw new invalid_argument("There is no such type of condition for the physical item!"); // At least one actual error message.
 }
 
 
@@ -85,21 +121,12 @@ protected:
     string releaseDate, dateOfReservation, dateOfReturn;
 
     bool physical;
-
-    void checkID(string id) {
-        if (find(IDs.begin(), IDs.end(), id) != IDs.end())
-            throw invalid_argument("There is already an item with this ID.");
-        else {
-            IDs.push_back(id);
-            this->ID = id;
-        }
-    }
 public:
     // Constructors
     Item() {
         this->name = "";
-        this->type = "item";
-        checkID("");
+        this->type = "Item";
+        this->ID = "";
         this->description = "";
         this->releaseDate = "";
         this->dateOfReservation = "";
@@ -108,10 +135,10 @@ public:
         this->physical = true;
     }
 
-    Item(const string& name, const string& ID, const string& description,
+    Item(const string& name, const string& id, const string& description,
         const string& releaseDate, const string& dateOfReservation, const string& dateOfReturn) {
         this->name = name;
-        checkID(ID);
+        this->ID = id;
         this->type = "Item";
         this->description = description;
         this->releaseDate = releaseDate;
@@ -165,18 +192,21 @@ public:
         // Date format: MM/DD/Year
         int returnMonth, returnDay, returnYear;
         separateDate(dateOfReturn, returnMonth, returnDay, returnYear);
-        int currentMonth, currentDay, currentYear;
-        separateDate(currentDate, currentMonth, currentDay, currentYear);
-        if (currentYear < returnYear) return false;
-        else if (currentYear > returnYear) return true;
-        else {
-            if (currentMonth < returnMonth) return false;
-            else if (currentMonth > returnMonth) return true;
+        if (isValidDateFormat(currentDate)) {
+            int currentMonth, currentDay, currentYear;
+            separateDate(currentDate, currentMonth, currentDay, currentYear);
+            if (currentYear < returnYear) return false;
+            else if (currentYear > returnYear) return true;
             else {
-                if (currentDay <= returnDay) return false;
-                else return true;
+                if (currentMonth < returnMonth) return false;
+                else if (currentMonth > returnMonth) return true;
+                else {
+                    if (currentDay <= returnDay) return false;
+                    else return true;
+                }
             }
         }
+        else return false;
     }
     virtual string CalculateLateFee(string) = 0; // in percentages // Abstract method
 };
@@ -255,11 +285,11 @@ public:
     }
     void DegradeCondition(Condition newCondition) {
         if (condition < newCondition) condition = newCondition;
-        else throw new exception("You can't upgrade the condition of a physical item!");
+        else throw new invalid_argument("You can't upgrade the condition of a physical item!");
     }
 
     void GetsStolen() { this->condition = Stolen; }
-    bool isStolen() { return this->condition == Stolen ? true : false; }
+    bool isStolen() const { return this->condition == Stolen ? true : false; }
 
     string CalculateLateFee(string currentDate) {
         // Date format: MM/DD/Year
@@ -361,10 +391,10 @@ private:
 public:
     // Constructors
     Book(): Physical() {
+        this->type = "Book";
         this->author = "";
         this->genre = "";
         this->year = 2024;
-        this->type = "Book";
     }
 
     Book(const string& name, const string& ID, const string& description,
@@ -373,7 +403,6 @@ public:
         : Physical(name, ID, description, releaseDate, dateOfReservation, dateOfReturn, condition) {
         this->author = author;
         this->genre = genre;
-        checkYear(year, releaseDate);
         this->year = year;
         this->type = "Book";
     }
@@ -408,7 +437,7 @@ private:
     int year;
 public:
     // Constructors
-    Ebook() : Electronical() {
+    Ebook() : Electronical(){
         this->author = "";
         this->genre = "";
         this->year = 2024;
@@ -421,7 +450,6 @@ public:
         : Electronical(name, ID, description, releaseDate, dateOfReservation, dateOfReturn, expirationDate) {
         this->author = author;
         this->genre = genre;
-        checkYear(year, releaseDate);
         this->year = year;
         this->type = "Ebook";
     }
@@ -452,13 +480,13 @@ public:
 
 class Magazine : public Physical {
 private:
-    string Publisher;
-    string IssueNumber;
+    string publisher;
+    string issueNumber;
 public:
     // Constructors
     Magazine() : Physical() {
-        this->Publisher = "";
-        this->IssueNumber = "";
+        this->publisher = "";
+        this->issueNumber = "";
         this->type = "Magazine";
     }
 
@@ -466,30 +494,30 @@ public:
         const string& publisher, const string& issueNumber,
         const string& releaseDate, const string& dateOfReservation, const string& dateOfReturn, const Condition& condition)
         : Physical(name, ID, description, releaseDate, dateOfReservation, dateOfReturn, condition) {
-        this->Publisher = publisher;
-        this->IssueNumber = issueNumber;
+        this->publisher = publisher;
+        this->issueNumber = issueNumber;
         this->type = "Magazine";
     }
 
     Magazine(const Magazine& other) : Physical(other) { // Copy constructor
         if (this != &other) {
-            this->Publisher = other.Publisher;
-            this->IssueNumber = other.IssueNumber;
+            this->publisher = other.publisher;
+            this->issueNumber = other.issueNumber;
         }
     }
 
     const Magazine& operator=(const Magazine& other) { // assignment operator
         if (this != &other) {
             Physical::operator=(other);
-            this->Publisher = other.Publisher;
-            this->IssueNumber = other.IssueNumber;
+            this->publisher = other.publisher;
+            this->issueNumber = other.issueNumber;
         }
         return *this;
     }
 
     // Methods
-    string GetPublisher() const { return Publisher; }
-    string GetIssueNumber() const { return IssueNumber; }
+    string GetPublisher() const { return publisher; }
+    string GetIssueNumber() const { return issueNumber; }
 };
 
 class DVD : public Physical {
@@ -513,7 +541,6 @@ public:
         : Physical(name, ID, description, releaseDate, dateOfReservation, dateOfReturn, condition) {
         this->director = director;
         this->genre = genre;
-        checkYear(year, releaseDate);
         this->year = year;
         this->duration = duration;
         this->type = "DVD";
@@ -549,13 +576,13 @@ public:
 class Software : public Electronical {
 private:
     string username;
-    Subscription SubscriptionPlan;
+    Subscription subscriptionPlan;
     double usageTime; // in minutes
 public:
     // Constructors
     Software() : Electronical() {
         this->username = "";
-        this->SubscriptionPlan = Free;
+        this->subscriptionPlan = Free;
         this->usageTime = 0;
         this->type = "Software";
     }
@@ -565,7 +592,7 @@ public:
         const string& dateOfReservation, const string& dateOfReturn, const string& expirationDate)
         : Electronical(name, ID, description, releaseDate, dateOfReservation, dateOfReturn, expirationDate) {
         this->username = username;
-        this->SubscriptionPlan = plan;
+        this->subscriptionPlan = plan;
         this->usageTime = usageTime;
         this->type = "Software";
     }
@@ -573,7 +600,7 @@ public:
     Software(const Software& other) : Electronical(other) { // Copy constructor
         if (this != &other) {
             this->username = other.username;
-            this->SubscriptionPlan = other.SubscriptionPlan;
+            this->subscriptionPlan = other.subscriptionPlan;
             this->usageTime = other.usageTime;
         }
     }
@@ -582,7 +609,7 @@ public:
         if (this != &other) {
             Electronical::operator=(other);
             this->username = other.username;
-            this->SubscriptionPlan = other.SubscriptionPlan;
+            this->subscriptionPlan = other.subscriptionPlan;
             this->usageTime = other.usageTime;
         }
         return *this;
@@ -592,7 +619,7 @@ public:
     string GetUsername() const { return username; }
     string GetSubscriptionPlan() const { 
         // I tried to find another way without using switch-case but there is no direct way of converting enum variable into a string.
-        switch (SubscriptionPlan)
+        switch (subscriptionPlan)
         {
             case Free:
                 return "Free";
@@ -624,84 +651,33 @@ void KMPcommand(vector<Item*>& Items, string searchString) {
     sort(itemsWithMatches.begin(), itemsWithMatches.end(), greater<pair<int, Item*>>());
 
 
-    cout << endl << "Sorting complete!" << endl
+    cout << "Sorting complete!" << endl
         << "Would you want to display the collected items with certain match?" << endl
         << "Or would you rather they completely replace whole list with all items?" << endl
         << "Select: \"Display\" or \"Replace\" (Make sure you write it as it is said, or else the program will continue to the next command.): ";
     string choice;
     cin >> choice;
     if (choice == "Display") {
-        cout << "Items containing \"" << searchString << "\" in their name:" << endl;
+        cout << "Items containing \"" << searchString << "\" in their name: ";
         int i = 0;
         for (; i < itemsWithMatches.size(); i++) {
+            cout << endl;
             cout << "Item " << i + 1 << ":" << endl;
             cout << "Name: " << itemsWithMatches[i].second->GetName() << endl;
             cout << "ID: " << itemsWithMatches[i].second->GetID() << endl;
-            cout << endl;
         }
         if (i == 0) cout << "None" << endl;
+        else cout << endl;
     }
     else if (choice == "Replace") {
         Items.clear(); // Clearing the vector
-        for (int i = 0; i < itemsWithMatches.size(); i++)
+        IDs.clear(); // Clearing this vector as the IDs also restart
+        for (int i = 0; i < itemsWithMatches.size(); i++) {
             Items.push_back(itemsWithMatches[i].second);
+            IDs.push_back(itemsWithMatches[i].second->GetID());
+        }            
     }
 };
-
-void displayEverything(vector<Item*>& Items) {
-    for (int i = 0; i < Items.size(); i++)
-    {
-        string type = Items[i]->GetItemType();
-
-        cout << "Item " << i + 1 << ":" << endl;
-        cout << "Name: " << Items[i]->GetName() << endl;
-        cout << "ID: " << Items[i]->GetID() << endl;
-        cout << "Type: " << type << endl;
-        cout << "Description: " << Items[i]->GetDescription() << endl;
-
-        if (type == "Book") {
-            Book* book = dynamic_cast<Book*>(Items[i]);
-            cout << "Author: " << book->GetAuthor() << endl;
-            cout << "Genre: " << book->GetGenre() << endl;
-            cout << "Year: " << book->GetYear() << endl;
-            cout << "Physical condition: " << book->GetPhysicalCondition() << endl;
-        }
-        else if (type == "Ebook") {
-            Ebook* ebook = dynamic_cast<Ebook*>(Items[i]);
-            cout << "Author: " << ebook->GetAuthor() << endl;
-            cout << "Genre: " << ebook->GetGenre() << endl;
-            cout << "Year: " << ebook->GetYear() << endl;
-            cout << "Digital code's expiration date: " << ebook->GetCodeExpirationDate() << endl;
-        }
-        else if (type == "Magazine") {
-            Magazine* magazine = dynamic_cast<Magazine*>(Items[i]);
-            cout << "Publisher: " << magazine->GetPublisher() << endl;
-            cout << "Issue Date: " << magazine->GetIssueNumber() << endl;
-            cout << "Physical condition: " << magazine->GetPhysicalCondition() << endl;
-        }
-        else if (type == "DVD") {
-            DVD* dvd = dynamic_cast<DVD*>(Items[i]);
-            cout << "Director: " << dvd->GetDirector() << endl;
-            cout << "Genre: " << dvd->GetGenre() << endl;
-            cout << "Year: " << dvd->GetYear() << endl;
-            cout << "Duration: " << dvd->GetDuration() << endl;
-            cout << "Physical condition: " << dvd->GetPhysicalCondition() << endl;
-        }
-        else if (type == "Software") {
-            Software* software = dynamic_cast<Software*>(Items[i]);
-            cout << "Username: " << software->GetUsername() << endl;
-            cout << "Subscription plan: " << software->GetSubscriptionPlan() << endl;
-            cout << "Usage time: " << software->GetUsageTime() << endl;
-            cout << "Digital code's expiration date: " << software->GetCodeExpirationDate() << endl;
-        }
-
-        cout << "Release date: " << Items[i]->GetReleaseDate() << endl;
-        cout << "Date of reservation: " << Items[i]->GetDateOfReservation() << endl;
-        cout << "Date of return: " << Items[i]->GetDateOfReturn() << endl;
-
-        cout << endl;
-    }
-}
 
 void display(vector<Item*>& Items, string type) {
     vector<Item*> FilteredForDisplay;
@@ -719,15 +695,72 @@ void display(vector<Item*>& Items, string type) {
         copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetItemType() == "DVD"; });
     else if (type == "softwares")
         copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetItemType() == "Software"; });
-    /*else if (type == "late")
-        copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item i) { return i.isLate() == true; });*/ // potential idea
+    else if (type == "late") {
+        string date;
+        cout << "For which date (MM/DD/YYYY): ";
+        cin >> date;
+        if (isValidDateFormat(date))
+            copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [date](Item* i) { return i->isLate(date) == true; });
+    }
     else if (type == "all" || type == "everything") FilteredForDisplay = Items;
-    // else copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [](Item* i) { return i->GetID() == type; }); // Potential idea. Doesn't work for some reason.
+    else copy_if(Items.begin(), Items.end(), back_inserter(FilteredForDisplay), [type](Item* i) { return i->GetID() == type; });
 
-    displayEverything(FilteredForDisplay);
+    int i = 0;
+    for (; i < FilteredForDisplay.size(); i++)
+    {
+        string type = FilteredForDisplay[i]->GetItemType();
+
+        if (FilteredForDisplay.size() > 1) cout << "Item " << i + 1 << ":" << endl;
+        cout << "Name: " << FilteredForDisplay[i]->GetName() << endl;
+        cout << "ID: " << FilteredForDisplay[i]->GetID() << endl;
+        cout << "Type: " << type << endl;
+        cout << "Description: " << FilteredForDisplay[i]->GetDescription() << endl;
+
+        if (type == "Book") {
+            Book* book = dynamic_cast<Book*>(FilteredForDisplay[i]);
+            cout << "Author: " << book->GetAuthor() << endl;
+            cout << "Genre: " << book->GetGenre() << endl;
+            cout << "Year: " << book->GetYear() << endl;
+            cout << "Physical condition: " << book->GetPhysicalCondition() << endl;
+        }
+        else if (type == "Ebook") {
+            Ebook* ebook = dynamic_cast<Ebook*>(FilteredForDisplay[i]);
+            cout << "Author: " << ebook->GetAuthor() << endl;
+            cout << "Genre: " << ebook->GetGenre() << endl;
+            cout << "Year: " << ebook->GetYear() << endl;
+            cout << "Digital code's expiration date: " << ebook->GetCodeExpirationDate() << endl;
+        }
+        else if (type == "Magazine") {
+            Magazine* magazine = dynamic_cast<Magazine*>(FilteredForDisplay[i]);
+            cout << "Publisher: " << magazine->GetPublisher() << endl;
+            cout << "Issue Date: " << magazine->GetIssueNumber() << endl;
+            cout << "Physical condition: " << magazine->GetPhysicalCondition() << endl;
+        }
+        else if (type == "DVD") {
+            DVD* dvd = dynamic_cast<DVD*>(FilteredForDisplay[i]);
+            cout << "Director: " << dvd->GetDirector() << endl;
+            cout << "Genre: " << dvd->GetGenre() << endl;
+            cout << "Year: " << dvd->GetYear() << endl;
+            cout << "Duration: " << dvd->GetDuration() << " minutes" << endl;
+            cout << "Physical condition: " << dvd->GetPhysicalCondition() << endl;
+        }
+        else if (type == "Software") {
+            Software* software = dynamic_cast<Software*>(FilteredForDisplay[i]);
+            cout << "Username: " << software->GetUsername() << endl;
+            cout << "Subscription plan: " << software->GetSubscriptionPlan() << endl;
+            cout << "Usage time: " << software->GetUsageTime() << endl;
+            cout << "Digital code's expiration date: " << software->GetCodeExpirationDate() << endl;
+        }
+
+        cout << "Release date: " << FilteredForDisplay[i]->GetReleaseDate() << endl;
+        cout << "Date of reservation: " << FilteredForDisplay[i]->GetDateOfReservation() << endl;
+        cout << "Date of return: " << FilteredForDisplay[i]->GetDateOfReturn() << endl;
+
+        cout << endl;
+    }
+    if (i == 0) cout << "None" << endl;
 }
 
-// Test the two for this approach
 void degradingCondition(vector<Item*>& Items, string target, string newCondition) {
     if (target == "all")
     {
@@ -765,49 +798,63 @@ void degradingCondition(vector<Item*>& Items, string target, string newCondition
 }
 
 void LateFeeCalculating(vector<Item*>& Items, string target, string date) {
-    if (target == "all") for (int i = 0; i < Items.size(); i++)
+    if (isValidDateFormat(date))
     {
-        cout << "Item " << i + 1 << ":" << endl;
-        cout << "Name: " << Items[i]->GetName() << endl;
-        cout << "ID: " << Items[i]->GetID() << endl;
-        cout << "Type: " << Items[i]->GetItemType() << endl;
-        cout << "Late fee for " << date << ": " << Items[i]->CalculateLateFee(date) << endl;
-        cout << endl;
-    }
-    else
-    {
-        if (find(IDs.begin(), IDs.end(), target) != IDs.end())
+        if (target == "all") {
+            int i = 0;
+            for (; i < Items.size(); i++)
+            {
+                cout << "Item " << i + 1 << ":" << endl;
+                cout << "Name: " << Items[i]->GetName() << endl;
+                cout << "ID: " << Items[i]->GetID() << endl;
+                cout << "Type: " << Items[i]->GetItemType() << endl;
+                cout << "Date of reservation: " << Items[i]->GetDateOfReservation() << endl;
+                cout << "Date of return: " << Items[i]->GetDateOfReturn() << endl;
+                cout << "Late fee for " << date << ": " << Items[i]->CalculateLateFee(date) << endl;
+                cout << endl;
+            }
+            if (i == 0) cout << "There are no items to calculate the late fee for." << endl;
+        }
+        else
         {
-            for (Item* i : Items) {
-                if (i->GetID() == target)
-                {
-                    cout << "Name: " << i->GetName() << endl;
-                    cout << "ID: " << i->GetID() << endl;
-                    cout << "Type: " << i->GetItemType() << endl;
-                    cout << "Late fee for " << date << ": " << i->CalculateLateFee(date) << endl;
-                    cout << endl;
+            if (find(IDs.begin(), IDs.end(), target) != IDs.end())
+            {
+                for (Item* i : Items) {
+                    if (i->GetID() == target)
+                    {
+                        cout << "Name: " << i->GetName() << endl;
+                        cout << "ID: " << i->GetID() << endl;
+                        cout << "Type: " << i->GetItemType() << endl;
+                        cout << "Date of reservation: " << i->GetDateOfReservation() << endl;
+                        cout << "Date of return: " << i->GetDateOfReturn() << endl;
+                        cout << "Late fee for " << date << ": " << i->CalculateLateFee(date) << endl;
+                        cout << endl;
 
-                    break;
+                        break;
+                    }
                 }
             }
+            else cout << "There is no such item in our library." << endl;
         }
-        else cout << "There is no such item in our library." << endl;
-    }
+    }    
 }
 
-// Test the two for this approach
 void ItemExpirationDate(vector<Item*>& ElectronicItems, string target) {
-    if (target == "all") for (int i = 0; i < ElectronicItems.size(); i++)
-    {
-        
-        cout << "Item " << i + 1 << ":" << endl;
-        cout << "Name: " << ElectronicItems[i]->GetName() << endl;
-        cout << "ID: " << ElectronicItems[i]->GetID() << endl;
-        cout << "Type: " << ElectronicItems[i]->GetItemType() << endl;
+    if (target == "all") {
+        int i = 0;
+        for (; i < ElectronicItems.size(); i++)
+        {
 
-        Electronical* eItem = dynamic_cast<Electronical*>(ElectronicItems[i]);
-        cout << "Expiration date: " << eItem->GetCodeExpirationDate() << endl;
-        cout << endl;
+            cout << "Item " << i + 1 << ":" << endl;
+            cout << "Name: " << ElectronicItems[i]->GetName() << endl;
+            cout << "ID: " << ElectronicItems[i]->GetID() << endl;
+            cout << "Type: " << ElectronicItems[i]->GetItemType() << endl;
+
+            Electronical* eItem = dynamic_cast<Electronical*>(ElectronicItems[i]);
+            cout << "Expiration date: " << eItem->GetCodeExpirationDate() << endl;
+            cout << endl;
+        }
+        if (i == 0) cout << "There are no electronic items to get expiration dates from." << endl;
     }
     else
     {
@@ -865,15 +912,16 @@ void Stealing(vector<Item*>& StolenItems, string target) {
 // Main program
 int main()
 {
+    system("cls");
     cout << "Welcome to our library program! Here you can upload the collection of items contained in your library." << endl
         << "In order to add items to the system you need to fill the \"items.txt\" file with the information regarding each physical and electronical item or put your file following the following instructions." << endl
-        << "WARNING! Read the instructions beforehand in the above mentioned file to avoid any unnecessary program exceptions. Also, please fill an appropriate data (no negative years, unallowed conditions, etc.)." << endl
+        << "WARNING! Read the instructions beforehand in the above mentioned \"items.txt\" file to avoid any unnecessary program exceptions. Also, please fill an appropriate data (no negative years, unallowed conditions, etc.)." << endl
         << endl
         << "Thank you for buying our program!" << endl
         << "If there are any problems, feel free to contact our support team :)" << endl
         << endl;
 
-    string fileChoice = "items.txt";
+    string fileChoice;
     while (fileChoice != "items.txt" && fileChoice != "another")
     {
         cout << "What file would you want to use? \"items.txt\" or another? Answer explicitly: ";
@@ -896,11 +944,21 @@ int main()
             }
         }
     }
-    
+
     vector<Item*> Items;
     string line;
 
-    ifstream itemsFile("items.txt");
+    ifstream itemsFile(fileChoice);
+    if (!itemsFile.is_open()) // If the file fails to open.
+    {
+        cout << endl << "The file you choose failed to open. Please try again in the next program running." << endl
+            << "Please read the instructions again before you choose a file!" << endl
+            << "If everything seems to be fine, then the problem may be from the file itself - it can be broken, corrupted or has another problem." << endl
+            << "Please check everything again.";
+        return -1;
+    }
+
+    system("cls");
     while (getline(itemsFile, line))
     {
         stringstream iss(line);
@@ -935,6 +993,10 @@ int main()
         // Assign elements to variables
         type = elements[0];
         name = elements[1];
+        if (find(IDs.begin(), IDs.end(), elements[2]) != IDs.end()) {
+            cout << "There is already an item with this ID: " << elements[2] << ". Therefore, the new one shall be skipped." << endl;
+            continue;
+        }
         ID = elements[2];
         description = elements[3];
         
@@ -946,22 +1008,31 @@ int main()
             
             author = elements[4];
             genre = elements[5];
-            year = stoi(elements[6]);
             releaseDate = elements[7];
             dateOfReservation = elements[8];
             dateOfReturn = elements[9];
-            conditionStr = elements[10];
-            
-            if (type == "Book") {
-                Condition condition = ConditionFromString(conditionStr);
 
-                Book* newBook = new Book(name, ID, description, author, genre, year, releaseDate, dateOfReservation, dateOfReturn, condition);
-                Items.push_back(newBook);
-            }
-            else if (type == "Ebook") {
-                Ebook* newEbook = new Ebook(author, ID, description, author, genre, year, releaseDate, dateOfReservation, dateOfReturn, conditionStr);
-                Items.push_back(newEbook);
-            }
+            if (isValidDateFormatForItem(releaseDate, "release date", ID) &&
+                checkYear(elements[6], releaseDate, type, ID) &&
+                isValidDateFormatForItem(dateOfReservation, "date of reservation", ID) &&
+                isValidDateFormatForItem(dateOfReturn, "date of return", ID)) {
+                year = stoi(elements[6]);
+                conditionStr = elements[10];
+
+                if (type == "Book") {
+                    Condition condition = ConditionFromString(conditionStr);
+
+                    Book* newBook = new Book(name, ID, description, author, genre, year, releaseDate, dateOfReservation, dateOfReturn, condition);
+                    Items.push_back(newBook);
+                }
+                else if (type == "Ebook") {
+                    if (isValidDateFormatForItem(conditionStr, "expiration date", ID)) {
+                        Ebook* newEbook = new Ebook(author, ID, description, author, genre, year, releaseDate, dateOfReservation, dateOfReturn, conditionStr);
+                        Items.push_back(newEbook);
+                    }                    
+                }
+                IDs.push_back(ID); // It reaches the ID vector as all variables are fine.
+            }            
         }
         else if (type == "Magazine") {
             string publisher, issueNumber;
@@ -971,12 +1042,17 @@ int main()
             releaseDate = elements[6];
             dateOfReservation = elements[7];
             dateOfReturn = elements[8];
-            conditionStr = elements[9];
 
-            Condition condition = ConditionFromString(conditionStr);
+            if (isValidDateFormatForItem(releaseDate, "release date", ID) &&
+                isValidDateFormatForItem(dateOfReservation, "date of reservation", ID) &&
+                isValidDateFormatForItem(dateOfReturn, "date of return", ID)) {
+                conditionStr = elements[9];
+                Condition condition = ConditionFromString(conditionStr);
 
-            Magazine* newMagazine = new Magazine(name, ID, description, publisher, issueNumber, releaseDate, dateOfReservation, dateOfReturn, condition);
-            Items.push_back(newMagazine);
+                Magazine* newMagazine = new Magazine(name, ID, description, publisher, issueNumber, releaseDate, dateOfReservation, dateOfReturn, condition);
+                Items.push_back(newMagazine);
+                IDs.push_back(ID); // It reaches the ID vector as all variables are fine.
+            }
         }
         else if (type == "DVD") {
             string director, genre;
@@ -985,17 +1061,27 @@ int main()
 
             director = elements[4];
             genre = elements[5];
-            year = stoi(elements[6]);
-            duration = stod(elements[7]);
+            if (!regex_match(elements[7], regex("^\\d+$"))) {
+                cout << "The duration of the new DVD with name \"" << name << "\" and ID: " << ID << " is not in the correct format! Therefore, the item will not be created!" << endl;
+                continue;
+            }
             releaseDate = elements[8];
             dateOfReservation = elements[9];
             dateOfReturn = elements[10];
-            conditionStr = elements[11];
+            if (isValidDateFormatForItem(releaseDate, "release date", ID) &&
+                checkYear(elements[6], releaseDate, type, ID) &&
+                isValidDateFormatForItem(dateOfReservation, "date of reservation", ID) &&
+                isValidDateFormatForItem(dateOfReturn, "date of return", ID)) {
+                year = stoi(elements[6]);
+                duration = stod(elements[7]);
 
-            Condition condition = ConditionFromString(conditionStr);
+                conditionStr = elements[11];
+                Condition condition = ConditionFromString(conditionStr);
 
-            DVD* newDVD = new DVD(director, ID, description, director, genre, year, duration, releaseDate, dateOfReservation, dateOfReturn, condition);
-            Items.push_back(newDVD);
+                DVD* newDVD = new DVD(name, ID, description, director, genre, year, duration, releaseDate, dateOfReservation, dateOfReturn, condition);
+                Items.push_back(newDVD);
+                IDs.push_back(ID); // It reaches the ID vector as all variables are fine.
+            }
         }
         else if (type == "Software") {
             string username, plan;
@@ -1008,31 +1094,44 @@ int main()
             dateOfReservation = elements[8];
             dateOfReturn = elements[9];
             conditionStr = elements[10];
+            if (isValidDateFormatForItem(releaseDate, "release date", ID) &&
+                isValidDateFormatForItem(dateOfReservation, "date of reservation", ID) &&
+                isValidDateFormatForItem(dateOfReturn, "date of return", ID) &&
+                isValidDateFormatForItem(conditionStr, "expiration date", ID)){
 
-            Subscription SubscriptionPlan;
-            if (plan == "Free") SubscriptionPlan = Free;
-            else if (plan == "Basic") SubscriptionPlan = Basic;
-            else if (plan == "Standard") SubscriptionPlan = Standard;
-            else if (plan == "Premium") SubscriptionPlan = Premium;
-            else throw new invalid_argument("There is no such type of subscription plan for the software \"" + name + "\" rented by " + username + "!");
+                Subscription SubscriptionPlan;
+                if (plan == "Free") SubscriptionPlan = Free;
+                else if (plan == "Basic") SubscriptionPlan = Basic;
+                else if (plan == "Standard") SubscriptionPlan = Standard;
+                else if (plan == "Premium") SubscriptionPlan = Premium;
+                else {
+                    cout << "There is no such type of subscription plan for the software \"" << name << "\" rented by " << username << "!. So, it will not be created." << endl;
+                    continue;
+                }
 
-            Software* program = new Software(name, ID, description, releaseDate, username, SubscriptionPlan, usageTime, dateOfReservation, dateOfReturn, conditionStr);
-            Items.push_back(program);
+                Software* program = new Software(name, ID, description, releaseDate, username, SubscriptionPlan, usageTime, dateOfReservation, dateOfReturn, conditionStr);
+                Items.push_back(program);
+                IDs.push_back(ID); // It reaches the ID vector as all variables are fine.
+            }
         }
     }
     itemsFile.close();
 
-    cout << "How would you like to send commands to the program?" << endl
+    cout << endl << "How would you like to send commands to the program?" << endl
         << "With the \"commands.txt\" file (beforehand prepared) or from the command window directly (at the moment)?" << endl;
-    string commandOption = "Window";
+    string commandOption;
     while (commandOption != "File" && commandOption != "Window")
     {
         cout << "Please select \"File\" or \"Window\": ";
         cin >> commandOption;
     }
+    system("cls");
 
     if (commandOption == "File")
     {
+        using namespace this_thread; // sleep_for, sleep_until
+        using namespace chrono; // nanoseconds, system_clock, seconds
+
         ifstream commandsFile("commands.txt");
         while (getline(commandsFile, line)) {
             stringstream iss(line);
@@ -1041,33 +1140,7 @@ int main()
 
             if (command == "//") continue;
 
-            if (command == "CheckIfLate") {
-                // Date format: MM/DD/Year
-                string date;
-                iss >> date;
-                for (int i = 0; i < Items.size(); i++)
-                {
-                    cout << Items[i]->GetName() << ": ";
-
-                    string late = Items[i]->isLate(date) ? "Late" : "Still on time";
-                    cout << late << endl;
-                }
-                cout << endl;
-            }
-            else if (command == "CalculateLateFee")
-            {
-                // Date format: MM/DD/Year
-                string date;
-                iss >> date;
-                LateFeeCalculating(Items, element, date);
-            }
-            else if (command == "KMP") KMPcommand(Items, element);
-            else if (command == "GetCodeExpirationDate") {
-                vector<Item*> ElectronicItems;
-                copy_if(Items.begin(), Items.end(), back_inserter(ElectronicItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == false; });
-                ItemExpirationDate(ElectronicItems, element);
-            }
-            else if (command == "GetsStolen") {
+            if (command == "GetsStolen") {
                 vector<Item*> StolenItems;
                 copy_if(Items.begin(), Items.end(), back_inserter(StolenItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == true; });
                 Stealing(StolenItems, element);
@@ -1081,9 +1154,41 @@ int main()
 
                 degradingCondition(PhysicalItems, element, newCondition);
             }
-            else if (command == "Show" || command == "Display") display(Items, element);
             else if (command == "End" && element == "program") break;
+            else {
+                if (command == "CalculateLateFee")
+                {
+                    // Date format: MM/DD/Year
+                    string date;
+                    iss >> date;
+                    LateFeeCalculating(Items, element, date);
+                }
+                else if (command == "CheckIfLate") {
+                    // Date format: MM/DD/Year
+                    if (isValidDateFormat(element))
+                    {
+                        for (int i = 0; i < Items.size(); i++)
+                        {
+                            cout << Items[i]->GetName() << ": ";
+
+                            string late = Items[i]->isLate(element) ? "Late" : "Still on time";
+                            cout << late << endl;
+                        }
+                    }                    
+                }
+                else if (command == "KMP") KMPcommand(Items, element);
+                else if (command == "GetCodeExpirationDate") {
+                    vector<Item*> ElectronicItems;
+                    copy_if(Items.begin(), Items.end(), back_inserter(ElectronicItems), [](Item* i) { return i->IsItPhysicalOrElectronic() == false; });
+                    ItemExpirationDate(ElectronicItems, element);
+                }
+                else if (command == "Show" || command == "Display") display(Items, element);
+
+                sleep_for(nanoseconds(6000000000)); // Couple of seconds pause so that the user can read the results on the command window.
+            }
+            cout << endl;
         }
+        commandsFile.close();
     }
     else if (commandOption == "Window")
     {
@@ -1092,19 +1197,17 @@ int main()
             "\"CheckIfLate {MM/DD/YYYY}\" - checks whether each item is late depending on the provided date\n"
             "\"KMP {searchString}\" - sorts the elements through KMP matching algorithm with provided search string\n"
             "\"DegradeCondition all/{specific ID} ./{type of Condition}\" - degrades the condition of a specific physical item or all of them\n"
-            // Fix the date calculation.
             "\"CalculateLateFee {specific ID}/all {MM/DD/YYYY}\" - calculates the late fee of a specific item or all of them\n"
-            "\"GetCodeExpirationDate {specific ID}/all\"\n"
-            "\"GetsStolen {specific ID}/all\"\n"
-
-            "\"Display physicals / electronics / books / ebooks / magazines / DVDs / softwares / all / everything\" - displays on the command window the desired output of data\n"
-            "\"Show / electronics / books / ebooks / magazines / DVDs / softwares / all / everything\" - displays on the command window the desired output of data\n\n" // Same as the previous one
-            "\"Show commands\" - display the current commands again. Useful if you do not want to scroll all the way up to see what functions you can do.\n"
+            "\"GetCodeExpirationDate {specific ID}/all\" - gets the expiration date of the electronic item(s) code after which it won't work anymore\n"
+            "\"GetsStolen {specific ID}/all\" - a specific physical item or all of them are considered stolen from the library\n"
+            "\"Display physicals / electronics / books / ebooks / magazines / DVDs / softwares / late / all / everything\" - displays on the command window the desired output of data\n"
+            "\"Show physicals / electronics / books / ebooks / magazines / DVDs / softwares / late / all / everything\" - displays on the command window the desired output of data\n\n" // Same as the previous one
+            "\"Show commands\" - display the current commands again. Useful if you do not want to scroll all the way up to see what functions you can do.\n" // Only for window's commands. There is no point in giving it in the file since the commands will be executed one after another without the user's need to check them again in the command window.
             "\"End program\" - stops the acceptance of new commands\n"
             "Anything else written will not be accepted and the program will ask you for a new commands without doing anything beforehand.\n\n";
         cout << commands;
 
-        string command = "";
+        string command;
         while (true)
         {
             string value = "";
@@ -1113,12 +1216,15 @@ int main()
 
             if (command == "CheckIfLate") {
                 // Date format: MM/DD/Year
-                for (int i = 0; i < Items.size(); i++)
+                if (isValidDateFormat(value))
                 {
-                    cout << Items[i]->GetName() << ": ";
+                    for (int i = 0; i < Items.size(); i++)
+                    {
+                        cout << Items[i]->GetName() << ": ";
 
-                    string late = Items[i]->isLate(value) ? "Late" : "Still on time";
-                    cout << late << endl;
+                        string late = Items[i]->isLate(value) ? "Late" : "Still on time";
+                        cout << late << endl;
+                    }
                 }
             }
             else if (command == "CalculateLateFee")
@@ -1151,8 +1257,10 @@ int main()
             else if (command == "Show" && value == "commands") cout << commands;
             else if (command == "Show" || command == "Display") display(Items, value);
             else if (command == "End" && value == "program") break;
+            cout << endl;
         }
     } 
+    system("cls");
 
     cout << "Would you want to export the items' data in another file? Yes or No (answer explicitly - if not, it will be considered as \"No\"): ";
     string exporting;
@@ -1164,7 +1272,7 @@ int main()
         {
             for (int i = 0; i < Items.size(); i++)
             {
-               string type = Items[i]->GetItemType();
+                string type = Items[i]->GetItemType();
 
                 outputFile << "Item " << i + 1 << ":" << endl;
                 outputFile << "Name: " << Items[i]->GetName() << endl;
@@ -1197,11 +1305,11 @@ int main()
                     outputFile << "Director: " << dvd->GetDirector() << endl;
                     outputFile << "Genre: " << dvd->GetGenre() << endl;
                     outputFile << "Year: " << dvd->GetYear() << endl;
-                    outputFile << "Duration: " << dvd->GetDuration() << endl;
+                    outputFile << "Duration: " << dvd->GetDuration() << " minutes" << endl;
                     outputFile << "Physical condition: " << dvd->GetPhysicalCondition() << endl;
                 }
                 else if (type == "Software") {
-                    Software* software= dynamic_cast<Software*>(Items[i]);
+                    Software* software = dynamic_cast<Software*>(Items[i]);
                     outputFile << "Username: " << software->GetUsername() << endl;
                     outputFile << "Subscription plan: " << software->GetSubscriptionPlan() << endl;
                     outputFile << "Usage time: " << software->GetUsageTime() << endl;
@@ -1210,13 +1318,20 @@ int main()
 
                 outputFile << "Release date: " << Items[i]->GetReleaseDate() << endl;
                 outputFile << "Date of reservation: " << Items[i]->GetDateOfReservation() << endl;
-                
+                outputFile << "Date of return: " << Items[i]->GetDateOfReturn() << endl;
+
                 outputFile << endl;
             }
         }
+        else cout << "The file failed to open. Therefore, the data is not safed." << endl;
 
         outputFile.close();
     }
 
     Items.clear(); // Clearing the vector
+    cout << endl << "Thank you for using my program! Have a great day!" << endl
+        << "Creator: Dzhano Mihaylov" << endl
+        << "Student ID: 200203987" << endl
+        << "Course: COS2021A Fundamental Data Structures" << endl
+        << "Professor: Vladimir Georgiev" << endl;
 };
